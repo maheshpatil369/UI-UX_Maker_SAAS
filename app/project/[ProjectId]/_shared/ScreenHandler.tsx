@@ -139,7 +139,7 @@ const scrollRight = () => {
               <div className="flex gap-2">
                 <button
                   onClick={handleCopy}
-                  className="flex items-center gap-1 px-3 py-1.5 text-xs rounded-md bg-yellow-400 hover:bg-yellow-500 text-black font-medium"
+                  className="flex items-center gap-1 px-3 py-1.5 text-xs rounded-md bg-yellow-400 hover:bg-yellow-500 text-black font-medium cursor-pointer"
                 >
                   <Copy size={14} />
                   Copy
