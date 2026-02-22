@@ -139,11 +139,11 @@ const ProjectCanvasPlayground = ({ params }: PageProps) => {
   };
 
 
-  const [isPaused, setIsPaused] = useState(false);
+const [isPaused, setIsPaused] = useState(false);
 const [isCancelled, setIsCancelled] = useState(false);
 const [currentIndex, setCurrentIndex] = useState(0);
-
 const abortControllerRef = useRef<AbortController | null>(null);
+
 
 const pauseGeneration = () => {
   setIsPaused(true);
@@ -158,7 +158,7 @@ const cancelGeneration = () => {
   setIsPaused(false);
 
   if (abortControllerRef.current) {
-    abortControllerRef.current.abort(); // 🔥 HARD STOP
+    abortControllerRef.current.abort(); 
   }
 };
 const waitWhilePaused = async () => {

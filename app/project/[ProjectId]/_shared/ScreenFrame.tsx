@@ -1,11 +1,11 @@
 import { themeToCssVars, THEMES } from "@/data/Themes";
 import { ProjectType } from "@/type/types";
 import { GripVertical } from "lucide-react";
-import React from "react";
+import React, { useRef } from "react";
 import { Rnd } from "react-rnd";
 import  ScreenHandler  from "./ScreenHandler";
 import { ScreenConfigType } from "@/type/types";
-
+import html2canvas from "html2canvas";
 
 type Props = {
   x: number;
@@ -33,7 +33,37 @@ function ScreenFrame({
 
   const safeHtmlCode = typeof htmlCode === "string" ? htmlCode : "";
 const isGenerated = safeHtmlCode.trim() !== "";
+const iframeRef = useRef<HTMLIFrameElement>(null);
 
+const takeIframeScreenshot = async () => {
+  const iframe = iframeRef.current;
+  if (!iframe) return;
+
+  try {
+    const doc = iframe.contentDocument;
+    if (!doc) return;
+
+    const body = doc.body;
+
+    // wait for layout stability
+    await new Promise((res) => requestAnimationFrame(res));
+
+    const canvas = await html2canvas(body, {
+      backgroundColor: null,
+      useCORS: true,
+      scale: window.devicePixelRatio || 1,
+    });
+
+    const image = canvas.toDataURL("image/png");
+
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = `${screen.screenName || "screen"}.png`;
+    link.click();
+  } catch (err) {
+    console.error("Screenshot failed:", err);
+  }
+};
 
   const themeCss = projectDetail?.theme
     ? themeToCssVars(THEMES[projectDetail.theme])
@@ -90,22 +120,36 @@ ${
       <div className="w-full h-full flex flex-col shadow-lg border rounded-lg overflow-hidden bg-white">
 
         {/* Header */}
-        <div className="drag-handle flex gap-2 items-center cursor-move bg-gray-50 border-b p-2">
-          <GripVertical className="text-gray-400 h-4 w-4" />
-          <span className="text-xs font-semibold text-gray-500 uppercase tracking-tight">
-            {projectDetail?.device === "mobile" ? "Mobile Screen" : "Desktop View"}
-            <ScreenHandler screen={screen}  />
-          </span>
-        </div>
+<div className="drag-handle flex items-center gap-2 cursor-move bg-gray-50 border-b p-2">
+  <GripVertical className="text-gray-400 h-4 w-4" />
+
+  <div className="flex items-center justify-between w-full">
+    {/* LEFT TEXT (unchanged meaning) */}
+    <div className="flex items-center gap-1 text-xs font-semibold text-gray-500 uppercase tracking-tight">
+      <span>
+        {projectDetail?.device === "mobile" ? "Mobile Screen" : "Desktop View"}
+      </span>
+      <span className="opacity-60">→</span>
+      <span className="normal-case opacity-80">
+        {screen.screenName}
+      </span>
+    </div>
+
+    {/* RIGHT ACTIONS */}
+    <ScreenHandler screen={screen} 
+onDownload={takeIframeScreenshot} />
+  </div>
+</div>
 
         {/* Iframe */}
     <iframe
-  className={`w-full h-[calc(100%-72px)] bg-white transition-opacity ${!panningEnabled ? "pointer-events-none" : "pointer-events-auto"
+  ref={iframeRef}
+  className={`w-full h-[calc(100%-72px)] bg-white transition-opacity ${
+    !panningEnabled ? "pointer-events-none" : "pointer-events-auto"
   }`}
   sandbox="allow-same-origin allow-scripts"
   srcDoc={html}
 />
-
         {/* Footer status indicator */}
         <div className={`h-[32px] w-full border-t flex items-center px-3 justify-between ${isGenerated ? 'bg-green-50' : 'bg-red-50'}`}>
           <div className="flex items-center gap-2">
