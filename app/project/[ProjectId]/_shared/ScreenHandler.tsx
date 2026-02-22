@@ -1,8 +1,10 @@
 "use client";
 
 import { ScreenConfigType } from "@/type/types";
-import { Code2, Download, Trash2, Copy, X } from "lucide-react";
-import { useState } from "react";
+import { Code2, Download, Trash2, Copy, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { useRef, useState } from "react";
+import { useEffect  } from "react";
+import { ChevronUp, ChevronDown } from "lucide-react";
 
 type Props = {
   onDownload: () => void;
@@ -41,9 +43,41 @@ ${screen.code || ""}
 </html>
 `.trim();
 
-const handleCopy = async () => {
-  await navigator.clipboard.writeText(finalHtml);
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(finalHtml);
+  };
+
+
+  const codeScrollRef = useRef<HTMLDivElement>(null);
+const scrollUp = () => {
+  codeScrollRef.current?.scrollBy({
+    top: -200,
+    behavior: "smooth",
+  });
 };
+
+const scrollDown = () => {
+  codeScrollRef.current?.scrollBy({
+    top: 200,
+    behavior: "smooth",
+  });
+};
+
+const scrollLeft = () => {
+  codeScrollRef.current?.scrollBy({
+    left: -200,
+    behavior: "smooth",
+  });
+};
+
+const scrollRight = () => {
+  codeScrollRef.current?.scrollBy({
+    left: 200,
+    behavior: "smooth",
+  });
+};
+
+
 
   return (
     <>
@@ -64,9 +98,9 @@ const handleCopy = async () => {
         {/* DOWNLOAD (later) */}
         <button
           title="Download"
-           onClick={(e) => {
-    e.stopPropagation();
-    onDownload();
+          onClick={(e) => {
+            e.stopPropagation();
+            onDownload();
           }}
           className="p-1 rounded hover:bg-gray-200 text-gray-500 hover:text-gray-700"
         >
@@ -92,10 +126,10 @@ const handleCopy = async () => {
           className="fixed inset-0 z-[9999] bg-black/40 flex items-center justify-center"
           onClick={() => setOpen(false)}
         >
-          <div
-            className="bg-white w-[90vw] max-w-4xl max-h-[80vh] rounded-xl shadow-2xl overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
+       <div
+  className="bg-white w-[90vw] max-w-4xl h-[80vh] rounded-xl shadow-2xl overflow-hidden flex flex-col"
+  onClick={(e) => e.stopPropagation()}
+>
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b">
               <h3 className="text-sm font-semibold text-gray-700">
@@ -105,7 +139,7 @@ const handleCopy = async () => {
               <div className="flex gap-2">
                 <button
                   onClick={handleCopy}
-                  className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200 text-gray-700"
+                  className="flex items-center gap-1 px-3 py-1.5 text-xs rounded-md bg-yellow-400 hover:bg-yellow-500 text-black font-medium"
                 >
                   <Copy size={14} />
                   Copy
@@ -120,12 +154,55 @@ const handleCopy = async () => {
               </div>
             </div>
 
-            {/* Code Viewer */}
-            <pre className="p-4 text-xs overflow-auto max-h-[65vh] bg-gray-50 text-gray-800">
-              <code>{finalHtml || "// No code generated yet"}</code>
-            </pre>
+      {/* Code Viewer */}
+{/* Code Viewer */}
+<div className="relative flex-1 bg-white border-t">
+  {/* Scroll buttons */}
+  <div className="absolute right-3 top-3 z-10 flex flex-col gap-2">
+    <button
+      onClick={scrollUp}
+      className="p-1.5 rounded !bg-black text-white hover:!bg-yellow-400 hover:text-black transition-colors !bg-neutral-900 cursor-pointer"
+    >
+      <ChevronUp size={16} />
+    </button>
+
+    <button
+      onClick={scrollDown}
+      className="p-1.5 rounded bg-black text-white hover:bg-yellow-400 hover:text-black transition-colors cursor-pointer"
+    >
+      <ChevronDown size={16} />
+    </button>
+
+    <div className="h-px bg-gray-300 my-1" />
+
+    <button
+      onClick={scrollLeft}
+      className="p-1.5 rounded bg-black text-white hover:bg-yellow-400 hover:text-black transition-colors cursor-pointer"
+    >
+      <ChevronLeft size={16} />
+    </button>
+
+    <button
+      onClick={scrollRight}
+      className="p-1.5 rounded bg-black text-white hover:bg-yellow-400 hover:text-black transition-colors cursor-pointer"
+    >
+      <ChevronRight size={16} />
+    </button>
+  </div>
+
+  {/* Scrollable code */}
+  <div
+    ref={codeScrollRef}
+    className="absolute inset-0 overflow-auto"
+  >
+    <pre className="p-5 text-xs text-black whitespace-pre">
+      <code>{finalHtml || "// No code generated yet"}</code>
+    </pre>
+  </div>
+</div>
+            </div>
           </div>
-        </div>
+      
       )}
     </>
   );
