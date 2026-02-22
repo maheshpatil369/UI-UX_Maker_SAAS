@@ -90,7 +90,7 @@ const scrollRight = () => {
             e.stopPropagation();
             setOpen(true);
           }}
-          className="p-1 rounded hover:bg-gray-200 text-gray-500 hover:text-gray-700"
+          className="p-1 rounded hover:bg-gray-200 text-gray-500 hover:text-gray-700 cursor-pointer"
         >
           <Code2 size={14} />
         </button>
@@ -102,7 +102,7 @@ const scrollRight = () => {
             e.stopPropagation();
             onDownload();
           }}
-          className="p-1 rounded hover:bg-gray-200 text-gray-500 hover:text-gray-700"
+          className="p-1 rounded hover:bg-gray-200 text-gray-500 hover:text-gray-700 cursor-pointer"
         >
           <Download size={14} />
         </button>
@@ -114,7 +114,7 @@ const scrollRight = () => {
             e.stopPropagation();
             console.log("DELETE SCREEN:", screen);
           }}
-          className="p-1 rounded hover:bg-red-100 text-gray-500 hover:text-red-600"
+          className="p-1 rounded hover:bg-red-100 text-gray-500 hover:text-red-600 cursor-pointer"
         >
           <Trash2 size={14} />
         </button>

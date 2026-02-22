@@ -119,26 +119,25 @@ ${
       {/* Container with conditional pointer events */}
       <div className="w-full h-full flex flex-col shadow-lg border rounded-lg overflow-hidden bg-white">
 
-        {/* Header */}
-<div className="drag-handle flex items-center gap-2 cursor-move bg-gray-50 border-b p-2">
-  <GripVertical className="text-gray-400 h-4 w-4" />
+ <div className="drag-handle flex items-center justify-between bg-gray-50 border-b p-2">
+  {/* LEFT: screen info */}
+  <div className="flex items-center gap-2">
+    <GripVertical className="text-gray-400 h-4 w-4" />
 
-  <div className="flex items-center justify-between w-full">
-    {/* LEFT TEXT (unchanged meaning) */}
-    <div className="flex items-center gap-1 text-xs font-semibold text-gray-500 uppercase tracking-tight">
-      <span>
-        {projectDetail?.device === "mobile" ? "Mobile Screen" : "Desktop View"}
-      </span>
-      <span className="opacity-60">→</span>
-      <span className="normal-case opacity-80">
-        {screen.screenName}
-      </span>
-    </div>
+    <span className="text-xs font-semibold text-gray-600 uppercase">
+      {projectDetail?.device === "mobile" ? "Mobile Screen" : "Website Screen"}
+    </span>
 
-    {/* RIGHT ACTIONS */}
-    <ScreenHandler screen={screen} 
-onDownload={takeIframeScreenshot} />
+    <span className="text-xs text-gray-400">
+      {screen.screenName}
+    </span>
   </div>
+
+  {/* RIGHT: actions (ALWAYS visible) */}
+  <ScreenHandler
+    screen={screen}
+    onDownload={takeIframeScreenshot}
+  />
 </div>
 
         {/* Iframe */}
