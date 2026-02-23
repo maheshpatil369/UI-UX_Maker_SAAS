@@ -2,10 +2,10 @@
 import "dotenv/config";
 
 export default {
-  schema: "./config/schema.ts",
+  schema: "./config/schema.tsx",
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
-    connectionString: process.env.DATABASE_URL!,
+    url: process.env.DATABASE_URL!,
   },
 };
