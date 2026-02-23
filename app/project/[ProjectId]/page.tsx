@@ -49,55 +49,51 @@ const ProjectCanvasPlayground = ({ params }: PageProps) => {
 
       setScreenConfig(screens);
 
-  for (let i = currentIndex; i < screens.length; i++) {
-  if (isCancelled) {
-    console.warn("⛔ Generation cancelled");
-    break;
-  }
+      for (let i = currentIndex; i < screens.length; i++) {
+        if (isCancelled) {
+          console.warn("⛔ Generation cancelled");
+          break;
+        }
 
-  setCurrentIndex(i);
+        setCurrentIndex(i);
+        await waitWhilePaused();
 
-  await waitWhilePaused(); // 🟡 PAUSE HERE
+        abortControllerRef.current = new AbortController();
+        const screen = screens[i];
 
-  abortControllerRef.current = new AbortController();
+        try {
+          const response = await axios.post(
+            "/api/generate-screen-ui",
+            {
+              projectId: ProjectId,
+              screenId: screen.id,
+              ScreenName: screen.name,
+              purpose: screen.purpose,
+              screenDescription: screen.screenDescription,
+            },
+            {
+              signal: abortControllerRef.current.signal,
+            }
+          );
 
-  const screen = screens[i];
-  console.log(`🎨 Generating UI for: ${screen.name}`);
+          setScreenConfig(prev =>
+            prev.map(s =>
+              s.id === screen.id
+                ? { ...s, code: response.data?.code ?? "" }
+                : s
+            )
+          );
 
-  try {
-    const response = await axios.post(
-      "/api/generate-screen-ui",
-      {
-        projectId: ProjectId,
-        screenId: screen.id,
-        ScreenName: screen.name,
-        purpose: screen.purpose,
-        screenDescription: screen.screenDescription,
-      },
-      {
-        signal: abortControllerRef.current.signal, // 🔥 IMPORTANT
+          setProgress(Math.round(((i + 1) / screens.length) * 100));
+        } catch (err: any) {
+          if (err.name === "CanceledError") {
+            console.warn("🛑 API aborted");
+            break;
+          } else {
+            throw err;
+          }
+        }
       }
-    );
-
-    setScreenConfig(prev =>
-      prev.map(s =>
-        s.id === screen.id
-          ? { ...s, code: response.data?.code ?? "" }
-          : s
-      )
-    );
-
-    setProgress(Math.round(((i + 1) / screens.length) * 100));
-  } catch (err: any) {
-    if (err.name === "CanceledError") {
-      console.warn("🛑 API aborted");
-      break;
-    } else {
-      throw err;
-    }
-  }
-}
-
 
       console.log("✅ All screens generated");
     } catch (e) {
@@ -112,12 +108,13 @@ const ProjectCanvasPlayground = ({ params }: PageProps) => {
     if (
       !PAUSE_PROJECT_FLOW &&
       projectDetail &&
-      screenConfig.length === 0
+      screenConfig.length === 0 &&
+      projectDetail?.isGenerated !== 1
     ) {
       console.log("⚙️ Triggering generation automatically");
       generateScreenConfig();
     }
-  }, [projectDetail]); // ✅ FIX: removed screenConfig dependency
+  }, [projectDetail]);
 
   /* ================= FETCH PROJECT ================= */
   const GetProjectDetail = async () => {
@@ -130,7 +127,9 @@ const ProjectCanvasPlayground = ({ params }: PageProps) => {
       );
 
       console.log("📦 Project detail:", result.data);
-      setProjectDetail(result?.data?.projectDetail);
+
+      setProjectDetail(result.data.projectDetail);
+      setScreenConfig(result.data.screenConfig || []);
     } catch (e) {
       console.error("❌ Fetch Error:", e);
     } finally {
@@ -138,58 +137,59 @@ const ProjectCanvasPlayground = ({ params }: PageProps) => {
     }
   };
 
+  const [isPaused, setIsPaused] = useState(false);
+  const [isCancelled, setIsCancelled] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-const [isPaused, setIsPaused] = useState(false);
-const [isCancelled, setIsCancelled] = useState(false);
-const [currentIndex, setCurrentIndex] = useState(0);
-const abortControllerRef = useRef<AbortController | null>(null);
+  const pauseGeneration = () => setIsPaused(true);
+  const resumeGeneration = () => setIsPaused(false);
 
+  const cancelGeneration = () => {
+    setIsCancelled(true);
+    setIsPaused(false);
+    abortControllerRef.current?.abort();
+  };
 
-const pauseGeneration = () => {
-  setIsPaused(true);
-};
-
-const resumeGeneration = () => {
-  setIsPaused(false);
-};
-
-const cancelGeneration = () => {
-  setIsCancelled(true);
-  setIsPaused(false);
-
-  if (abortControllerRef.current) {
-    abortControllerRef.current.abort(); 
-  }
-};
-const waitWhilePaused = async () => {
-  while (isPaused) {
-    await new Promise(res => setTimeout(res, 300));
-  }
-};
+  const waitWhilePaused = async () => {
+    while (isPaused) {
+      await new Promise(res => setTimeout(res, 300));
+    }
+  };
 
   return (
     <div className="h-screen flex flex-col">
-   <ProjectHeader
-  progress={progress}
-  loading={loading}
-  isPaused={isPaused}
-  onPause={pauseGeneration}
-  onResume={resumeGeneration}
-  onCancel={cancelGeneration}
-/>
+      <ProjectHeader
+        progress={progress}
+        loading={loading}
+        isPaused={isPaused}
+        onPause={pauseGeneration}
+        onResume={resumeGeneration}
+        onCancel={cancelGeneration}
+      />
 
-
-      <div className="flex flex-1 min-h-0">
-        <div className="w-[300px] border-r overflow-y-auto">
+      {/* RESPONSIVE LAYOUT */}
+      <div className="flex flex-1 min-h-0 flex-col lg:flex-row">
+        
+        {/* SETTINGS PANEL */}
+        <div className="
+          w-full 
+          lg:w-[300px] 
+          bg-white
+          border-b lg:border-b-0 lg:border-r
+          overflow-y-auto
+        ">
           <SettingSection projectDetail={projectDetail} />
         </div>
 
+        {/* CANVAS */}
         <div className="flex-1 overflow-hidden bg-gray-100">
           <Canvas
             projectDetail={projectDetail}
             screenConfig={screenConfig}
           />
         </div>
+
       </div>
     </div>
   );

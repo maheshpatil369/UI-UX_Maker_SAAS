@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { TransformWrapper, TransformComponent, useControls } from "react-zoom-pan-pinch";
+import {
+  TransformWrapper,
+  TransformComponent,
+  useControls,
+} from "react-zoom-pan-pinch";
 import ScreenFrame from "./ScreenFrame";
 import { ProjectType, ScreenConfigType } from "@/type/types";
-import { ZoomIn, ZoomOut, Maximize, MousePointer2 } from "lucide-react";
+import { ZoomIn, ZoomOut, Maximize } from "lucide-react";
 
 type Props = {
   projectDetail: ProjectType | undefined;
@@ -10,26 +14,33 @@ type Props = {
   loading?: boolean;
 };
 
-const Controls = () => {
+/* ================= CONTROLS ================= */
+const Controls = ({ isMobileView }: { isMobileView: boolean }) => {
   const { zoomIn, zoomOut, resetTransform } = useControls();
+
+  if (isMobileView) return null; // 📱 pinch zoom is enough
+
   return (
     <div className="absolute bottom-6 right-6 z-50 flex flex-col gap-2 bg-white/80 backdrop-blur-md p-1.5 rounded-xl shadow-2xl border border-gray-200">
       <button
         onClick={() => zoomIn()}
-        className="p-2.5 hover:bg-white hover:text-blue-600 rounded-lg text-gray-500 transition-all shadow-sm border border-transparent hover:border-gray-100"
+        className="p-2.5 hover:bg-white hover:text-blue-600 rounded-lg text-gray-500 transition-all shadow-sm"
       >
         <ZoomIn size={20} />
       </button>
+
       <button
         onClick={() => zoomOut()}
-        className="p-2.5 hover:bg-white hover:text-blue-600 rounded-lg text-gray-500 transition-all shadow-sm border border-transparent hover:border-gray-100"
+        className="p-2.5 hover:bg-white hover:text-blue-600 rounded-lg text-gray-500 transition-all shadow-sm"
       >
         <ZoomOut size={20} />
       </button>
+
       <div className="h-px bg-gray-200 mx-2" />
+
       <button
         onClick={() => resetTransform()}
-        className="p-2.5 hover:bg-white hover:text-blue-600 rounded-lg text-gray-500 transition-all shadow-sm border border-transparent hover:border-gray-100"
+        className="p-2.5 hover:bg-white hover:text-blue-600 rounded-lg text-gray-500 transition-all shadow-sm"
       >
         <Maximize size={20} />
       </button>
@@ -37,60 +48,52 @@ const Controls = () => {
   );
 };
 
+/* ================= CANVAS ================= */
 function Canvas({ projectDetail, screenConfig, loading }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [panningEnabled, setPanningEnabled] = useState(true);
-  const isMobile = projectDetail?.device == "mobile";
+  const [viewportWidth, setViewportWidth] = useState(1440);
 
-  // const SCREEN_WIDTH = isMobile ? 400 : 1200;
-  // const SCREEN_HIGHT = isMobile ? 800 : 800;
-  // const GAP = isMobile ? 10 : 70;
+  const isMobile = projectDetail?.device === "mobile";
 
-const VIEWPORT_WIDTH =
-  typeof window !== "undefined" ? window.innerWidth : 1440;
+  /* ================= VIEWPORT TRACKING ================= */
+  useEffect(() => {
+    const update = () => setViewportWidth(window.innerWidth);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
 
-const SCREEN_WIDTH = isMobile
-  ? 390 
-  : Math.min(1200, VIEWPORT_WIDTH * 0.70); 
+  const isMobileView = viewportWidth < 768;
 
-const SCREEN_HIGHT = isMobile
-  ? 780
-  : 800;
+  /* ================= SCREEN SIZING ================= */
+  const SCREEN_WIDTH = isMobile
+    ? Math.min(360, viewportWidth * 0.9)
+    : Math.min(1200, viewportWidth * 0.7);
 
-  const INITIAL_SCALE =
-  VIEWPORT_WIDTH < 1024 ? 0.75 : 0.75;
+  const SCREEN_HIGHT = isMobile ? 720 : 800;
 
-const GAP = isMobile ? 12 : 80;
+  const GAP = isMobileView ? 16 : isMobile ? 12 : 80;
 
+  const INITIAL_SCALE = isMobileView ? 0.65 : 0.75;
 
+  const PADDING_TOP = isMobileView ? 40 : 75;
+  const PADDING_LEFT = isMobileView ? 20 : 75;
+
+  /* ================= PREVENT CTRL + SCROLL ================= */
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     const handleWheel = (e: WheelEvent) => {
-      if (e.ctrlKey) {
-        e.preventDefault();
-      }
+      if (e.ctrlKey) e.preventDefault();
     };
 
     container.addEventListener("wheel", handleWheel, { passive: false });
-
-    return () => {
-      container.removeEventListener("wheel", handleWheel);
-    };
+    return () => container.removeEventListener("wheel", handleWheel);
   }, []);
 
-const totalScreens = screenConfig.length;
-
-const totalWidth =
-  totalScreens * SCREEN_WIDTH + (totalScreens - 1) * GAP;
-
-const startX = -totalWidth / 2 + SCREEN_WIDTH / 2;
-
-const PADDING_TOP = 75;   
-const PADDING_LEFT = 75;
-
-
+  /* ================= RENDER ================= */
   return (
     <div
       ref={containerRef}
@@ -105,17 +108,14 @@ const PADDING_LEFT = 75;
         initialScale={INITIAL_SCALE}
         minScale={0.1}
         maxScale={4}
-        centerOnInit={true}
+        centerOnInit
         limitToBounds={false}
-        wheel={{
-          step: 0.1,
-          activationKeys: [],
-        }}
+        wheel={{ step: 0.1, activationKeys: [] }}
         pinch={{ disabled: false }}
         panning={{ disabled: !panningEnabled }}
         doubleClick={{ disabled: true }}
       >
-        <Controls />
+        <Controls isMobileView={isMobileView} />
 
         <TransformComponent
           wrapperStyle={{
@@ -126,18 +126,16 @@ const PADDING_LEFT = 75;
         >
           <div className="relative">
             {screenConfig.map((screen, index) => (
-             <ScreenFrame
-  x={PADDING_LEFT + index * (SCREEN_WIDTH + GAP)}
-  y={PADDING_TOP}
-
-
+              <ScreenFrame
+                key={index}
+                x={PADDING_LEFT + index * (SCREEN_WIDTH + GAP)}
+                y={PADDING_TOP}
                 width={SCREEN_WIDTH}
                 height={SCREEN_HIGHT}
-                key={index}
                 setPanningEnabled={setPanningEnabled}
                 htmlCode={screen?.code}
                 projectDetail={projectDetail}
-                panningEnabled={panningEnabled} 
+                panningEnabled={panningEnabled}
                 screen={screen}
               />
             ))}
