@@ -1,8 +1,9 @@
+// app/api/project/route.tsx
 import { currentUser } from "@clerk/nextjs/server";
 import { projectsTable, ScreenConfigTable } from "@/config/schema";
 import { NextResponse, NextRequest } from "next/server";
 import { db } from "@/config/db";
-import { and, eq } from "drizzle-orm";
+import { and, eq, desc } from "drizzle-orm";
 
 export async function POST(request: Request) {
   try {
@@ -42,18 +43,10 @@ export async function POST(request: Request) {
   }
 }
 
-
 export async function GET(req: NextRequest) {
   try {
     const projectId = req.nextUrl.searchParams.get("projectId");
     const user = await currentUser();
-
-    if (!projectId) {
-      return NextResponse.json(
-        { error: "projectId missing" },
-        { status: 400 }
-      );
-    }
 
     if (!user?.primaryEmailAddress?.emailAddress) {
       return NextResponse.json(
@@ -62,16 +55,27 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    const userEmail = user.primaryEmailAddress.emailAddress;
+
+    // IF projectId is missing, return list of all projects for the user (Home Screen)
+    if (!projectId) {
+      const allProjects = await db
+        .select()
+        .from(projectsTable)
+        .where(eq(projectsTable.userId, userEmail))
+        .orderBy(desc(projectsTable.createdAt));
+
+      return NextResponse.json({ projects: allProjects });
+    }
+
+    // IF projectId is provided, return specific project detail (Project Page)
     const project = await db
       .select()
       .from(projectsTable)
       .where(
         and(
           eq(projectsTable.projectId, projectId),
-          eq(
-            projectsTable.userId,
-            user.primaryEmailAddress.emailAddress
-          )
+          eq(projectsTable.userId, userEmail)
         )
       );
 
@@ -99,5 +103,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
-

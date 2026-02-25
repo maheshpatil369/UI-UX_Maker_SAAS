@@ -39,8 +39,8 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://uixmaker.in"),
 
   icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-icon.png",
+    icon: "/logo.png",
+    apple: "/logo.png",
   },
 
   openGraph: {
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     siteName: "UI Forge",
     images: [
       {
-        url: "/og-image.png", // optional (recommended)
+        url: "/UIForage.png", // optional (recommended)
         width: 1200,
         height: 630,
         alt: "UI Forge – AI UI UX Creator",
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     title: "UI Forge – AI UI/UX Creator",
     description:
       "Create modern UI/UX designs instantly using AI. Websites, dashboards, and mobile apps.",
-    images: ["/og-image.png"],
+    images: ["/logo.png"],
   },
 
   robots: {
