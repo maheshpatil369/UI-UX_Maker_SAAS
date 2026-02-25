@@ -43,6 +43,40 @@ export async function POST(request: Request) {
   }
 }
 
+export async function PUT(request: Request) {
+  try {
+    const { projectId, previewImage } = await request.json();
+    const user = await currentUser();
+
+    if (!user?.primaryEmailAddress?.emailAddress) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const result = await db
+      .update(projectsTable)
+      .set({
+        previewImage: previewImage,
+        updatedAt: new Date()
+      })
+      .where(
+        and(
+          eq(projectsTable.projectId, projectId),
+          eq(projectsTable.userId, user.primaryEmailAddress.emailAddress)
+        )
+      )
+      .returning();
+
+    if (result.length === 0) {
+        return NextResponse.json({ error: "Project not found or unauthorized" }, { status: 404 });
+    }
+
+    return NextResponse.json(result[0]);
+  } catch (error) {
+    console.error("PUT /project error:", error);
+    return NextResponse.json({ error: String(error) }, { status: 500 });
+  }
+}
+
 export async function GET(req: NextRequest) {
   try {
     const projectId = req.nextUrl.searchParams.get("projectId");

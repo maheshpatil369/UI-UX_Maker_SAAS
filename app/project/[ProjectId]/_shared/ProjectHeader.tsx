@@ -31,8 +31,7 @@ const ProjectHeader = ({
 
         {/* Left */}
         <div className='flex gap-2 items-center'>
-          <Image src="/logoui.png" alt="Logo" width={60} height={60} />
-          <h2 className='text-xl font-semibold'>UI/UX MOCK</h2>
+        <Image className='mt-1' src="/UIForage.png" alt="UIForage" width={140} height={90} />
         </div>
 
         {/* Right */}

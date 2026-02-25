@@ -1,12 +1,21 @@
 import { themeToCssVars, THEMES } from "@/data/Themes";
-import { ProjectType } from "@/type/types";
+import { ProjectType, ScreenConfigType } from "@/type/types";
 import { GripVertical } from "lucide-react";
-import React, { useRef } from "react";
+import React, {
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import { Rnd } from "react-rnd";
-import  ScreenHandler  from "./ScreenHandler";
-import { ScreenConfigType } from "@/type/types";
+import ScreenHandler from "./ScreenHandler";
 import html2canvas from "html2canvas";
 
+/* ================= REF TYPE ================= */
+export type ScreenFrameRef = {
+  getIframe: () => HTMLIFrameElement | null;
+};
+
+/* ================= PROPS ================= */
 type Props = {
   x: number;
   y: number;
@@ -17,58 +26,65 @@ type Props = {
   projectDetail: ProjectType | undefined;
   panningEnabled: boolean;
   screen: ScreenConfigType;
-}
-
-function ScreenFrame({
-  x,
-  y,
-  width,
-  height,
-  setPanningEnabled,
-  htmlCode,
-  projectDetail,
-  panningEnabled,
-  screen,
-}: Props) {
-
-  const safeHtmlCode = typeof htmlCode === "string" ? htmlCode : "";
-const isGenerated = safeHtmlCode.trim() !== "";
-const iframeRef = useRef<HTMLIFrameElement>(null);
-
-const takeIframeScreenshot = async () => {
-  const iframe = iframeRef.current;
-  if (!iframe) return;
-
-  try {
-    const doc = iframe.contentDocument;
-    if (!doc) return;
-
-    const body = doc.body;
-
-    // wait for layout stability
-    await new Promise((res) => requestAnimationFrame(res));
-
-    const canvas = await html2canvas(body, {
-      backgroundColor: null,
-      useCORS: true,
-      scale: window.devicePixelRatio || 1,
-    });
-
-    const image = canvas.toDataURL("image/png");
-
-    const link = document.createElement("a");
-    link.href = image;
-    link.download = `${screen.screenName || "screen"}.png`;
-    link.click();
-  } catch (err) {
-    console.error("Screenshot failed:", err);
-  }
 };
 
-  const themeCss = projectDetail?.theme
-    ? themeToCssVars(THEMES[projectDetail.theme])
-    : "";
+/* ================= COMPONENT ================= */
+const ScreenFrame = forwardRef<ScreenFrameRef, Props>(
+  (
+    {
+      x,
+      y,
+      width,
+      height,
+      setPanningEnabled,
+      htmlCode,
+      projectDetail,
+      panningEnabled,
+      screen,
+    },
+    ref
+  ) => {
+    const iframeRef = useRef<HTMLIFrameElement>(null);
 
+    /* expose iframe to parent (Canvas) */
+    useImperativeHandle(ref, () => ({
+      getIframe: () => iframeRef.current,
+    }));
+
+    const safeHtmlCode = typeof htmlCode === "string" ? htmlCode : "";
+    const isGenerated = safeHtmlCode.trim() !== "";
+
+    /* ================= DOWNLOAD SCREENSHOT ================= */
+    const takeIframeScreenshot = async () => {
+      const iframe = iframeRef.current;
+      if (!iframe) return;
+
+      try {
+        const doc = iframe.contentDocument;
+        if (!doc || !doc.body) return;
+
+        // wait for layout stability
+        await new Promise((res) => requestAnimationFrame(res));
+
+        const canvas = await html2canvas(doc.body, {
+          backgroundColor: null,
+          useCORS: true,
+          scale: window.devicePixelRatio || 1,
+        });
+
+        const image = canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.href = image;
+        link.download = `${screen.screenName || "screen"}.png`;
+        link.click();
+      } catch (err) {
+        console.error("Screenshot failed:", err);
+      }
+    };
+
+    const themeCss = projectDetail?.theme
+      ? themeToCssVars(THEMES[projectDetail.theme])
+      : "";
   const html = `
 <!doctype html>
 <html>
@@ -168,6 +184,6 @@ ${
       </div>
     </Rnd>
   );
-}
+});
 
 export default ScreenFrame;

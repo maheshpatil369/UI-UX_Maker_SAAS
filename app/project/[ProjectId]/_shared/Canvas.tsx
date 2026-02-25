@@ -1,3 +1,6 @@
+// app/project/[ProjectId]/_shared/Canvas.tsx
+"use client";
+
 import React, { useState, useEffect, useRef } from "react";
 import {
   TransformWrapper,
@@ -7,7 +10,11 @@ import {
 import ScreenFrame from "./ScreenFrame";
 import { ProjectType, ScreenConfigType } from "@/type/types";
 import { ZoomIn, ZoomOut, Maximize } from "lucide-react";
+import { useParams } from "next/navigation";
+import html2canvas from "html2canvas";
+import axios from "axios";
 
+/* ================= PROPS ================= */
 type Props = {
   projectDetail: ProjectType | undefined;
   screenConfig: ScreenConfigType[];
@@ -17,31 +24,18 @@ type Props = {
 /* ================= CONTROLS ================= */
 const Controls = ({ isMobileView }: { isMobileView: boolean }) => {
   const { zoomIn, zoomOut, resetTransform } = useControls();
-
-  if (isMobileView) return null; // 📱 pinch zoom is enough
+  if (isMobileView) return null;
 
   return (
     <div className="absolute bottom-6 right-6 z-50 flex flex-col gap-2 bg-white/80 backdrop-blur-md p-1.5 rounded-xl shadow-2xl border border-gray-200">
-      <button
-        onClick={() => zoomIn()}
-        className="p-2.5 hover:bg-white hover:text-blue-600 rounded-lg text-gray-500 transition-all shadow-sm"
-      >
+      <button onClick={() => zoomIn()} className="p-2.5 rounded-lg text-gray-500 hover:bg-white">
         <ZoomIn size={20} />
       </button>
-
-      <button
-        onClick={() => zoomOut()}
-        className="p-2.5 hover:bg-white hover:text-blue-600 rounded-lg text-gray-500 transition-all shadow-sm"
-      >
+      <button onClick={() => zoomOut()} className="p-2.5 rounded-lg text-gray-500 hover:bg-white">
         <ZoomOut size={20} />
       </button>
-
       <div className="h-px bg-gray-200 mx-2" />
-
-      <button
-        onClick={() => resetTransform()}
-        className="p-2.5 hover:bg-white hover:text-blue-600 rounded-lg text-gray-500 transition-all shadow-sm"
-      >
+      <button onClick={() => resetTransform()} className="p-2.5 rounded-lg text-gray-500 hover:bg-white">
         <Maximize size={20} />
       </button>
     </div>
@@ -50,13 +44,17 @@ const Controls = ({ isMobileView }: { isMobileView: boolean }) => {
 
 /* ================= CANVAS ================= */
 function Canvas({ projectDetail, screenConfig, loading }: Props) {
+  const { ProjectId } = useParams();
   const containerRef = useRef<HTMLDivElement>(null);
+  const iframeRefs = useRef<(HTMLIFrameElement | null)[]>([]);
+
   const [panningEnabled, setPanningEnabled] = useState(true);
   const [viewportWidth, setViewportWidth] = useState(1440);
+  const [hasCaptured, setHasCaptured] = useState(false);
 
   const isMobile = projectDetail?.device === "mobile";
 
-  /* ================= VIEWPORT TRACKING ================= */
+  /* ================= VIEWPORT ================= */
   useEffect(() => {
     const update = () => setViewportWidth(window.innerWidth);
     update();
@@ -66,84 +64,175 @@ function Canvas({ projectDetail, screenConfig, loading }: Props) {
 
   const isMobileView = viewportWidth < 768;
 
-  /* ================= SCREEN SIZING ================= */
+  /* ================= SIZING ================= */
   const SCREEN_WIDTH = isMobile
     ? Math.min(360, viewportWidth * 0.9)
     : Math.min(1200, viewportWidth * 0.7);
 
-  const SCREEN_HIGHT = isMobile ? 720 : 800;
-
+  const SCREEN_HEIGHT = isMobile ? 720 : 800;
   const GAP = isMobileView ? 16 : isMobile ? 12 : 80;
-
   const INITIAL_SCALE = isMobileView ? 0.65 : 0.75;
-
   const PADDING_TOP = isMobileView ? 40 : 75;
   const PADDING_LEFT = isMobileView ? 20 : 75;
 
+  /* ================= IFRAME CAPTURE (GEMINI LOGIC) ================= */
+  const captureOneIframe = async (iframe: HTMLIFrameElement) => {
+    try {
+      const doc = iframe.contentDocument;
+      if (!doc || !doc.body) return null;
+
+      // wait for fonts
+      // @ts-ignore
+      if (doc.fonts?.ready) await doc.fonts.ready;
+
+      // wait for tailwind / animations
+      await new Promise((r) => setTimeout(r, 800));
+
+      const w = doc.documentElement.scrollWidth || SCREEN_WIDTH;
+      const h = doc.documentElement.scrollHeight || SCREEN_HEIGHT;
+
+      return await html2canvas(doc.body, {
+        backgroundColor: "#ffffff",
+        useCORS: true,
+        allowTaint: true,
+        width: w,
+        height: h,
+        windowWidth: w,
+        windowHeight: h,
+        scale: 0.5, // optimized for DB preview
+        logging: false,
+      });
+    } catch (e) {
+      console.error("Iframe capture failed", e);
+      return null;
+    }
+  };
+
+  /* ================= SCREENSHOT ================= */
+  const onTakeScreenshot = async () => {
+    if (hasCaptured) return;
+
+    try {
+      const iframes = iframeRefs.current.filter(Boolean) as HTMLIFrameElement[];
+      if (!iframes.length) return;
+
+      const shots: HTMLCanvasElement[] = [];
+      for (const iframe of iframes) {
+        const c = await captureOneIframe(iframe);
+        if (c) shots.push(c);
+      }
+      if (!shots.length) return;
+
+      const previewScale = 0.5;
+      const outW = shots.length * (SCREEN_WIDTH * previewScale + 10);
+      const outH = SCREEN_HEIGHT * previewScale;
+
+      const out = document.createElement("canvas");
+      out.width = outW;
+      out.height = outH;
+
+      const ctx = out.getContext("2d");
+      if (!ctx) return;
+
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, outW, outH);
+
+      shots.forEach((c, i) => {
+        ctx.drawImage(
+          c,
+          i * (SCREEN_WIDTH * previewScale + 10),
+          0,
+          SCREEN_WIDTH * previewScale,
+          SCREEN_HEIGHT * previewScale
+        );
+      });
+
+      await axios.put("/api/project", {
+        projectId: ProjectId,
+        previewImage: out.toDataURL("image/jpeg", 0.7),
+      });
+
+      setHasCaptured(true);
+      console.log("✅ Project preview saved");
+    } catch (e) {
+      console.error("Screenshot failed", e);
+    }
+  };
+
+  /* ================= AUTO TRIGGER ================= */
+  useEffect(() => {
+    if (!loading && !hasCaptured && screenConfig.length > 0) {
+      const ready = screenConfig.every(
+        (s) => s.code && s.code.trim().length > 100
+      );
+      if (ready) {
+        const t = setTimeout(onTakeScreenshot, 5000);
+        return () => clearTimeout(t);
+      }
+    }
+  }, [screenConfig, loading, hasCaptured]);
+
   /* ================= PREVENT CTRL + SCROLL ================= */
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      if (e.ctrlKey) e.preventDefault();
-    };
-
-    container.addEventListener("wheel", handleWheel, { passive: false });
-    return () => container.removeEventListener("wheel", handleWheel);
+    const el = containerRef.current;
+    if (!el) return;
+    const wheel = (e: WheelEvent) => e.ctrlKey && e.preventDefault();
+    el.addEventListener("wheel", wheel, { passive: false });
+    return () => el.removeEventListener("wheel", wheel);
   }, []);
 
   /* ================= RENDER ================= */
-  return (
-    <div
-      ref={containerRef}
-      className="relative w-full h-full bg-gray-100 overflow-hidden select-none"
-      style={{
-        backgroundImage:
-          "radial-gradient(rgba(0,0,0,0.15) 1px, transparent 1px)",
-        backgroundSize: "20px 20px",
-      }}
+ return (
+  // ✅ STATIC BACKGROUND (never transforms)
+  <div
+    ref={containerRef}
+    className="relative w-full h-full overflow-hidden select-none"
+    style={{
+      backgroundImage:
+        "radial-gradient(rgba(0,0,0,0.15) 1px, transparent 1px)",
+      backgroundSize: "20px 20px",
+    }}
+  >
+    <TransformWrapper
+      initialScale={INITIAL_SCALE}
+      minScale={0.1}
+      maxScale={4}
+      centerOnInit
+      limitToBounds={false}
+      wheel={{ step: 0.1, activationKeys: [] }}
+      panning={{ disabled: !panningEnabled }}
+      doubleClick={{ disabled: true }}
     >
-      <TransformWrapper
-        initialScale={INITIAL_SCALE}
-        minScale={0.1}
-        maxScale={4}
-        centerOnInit
-        limitToBounds={false}
-        wheel={{ step: 0.1, activationKeys: [] }}
-        pinch={{ disabled: false }}
-        panning={{ disabled: !panningEnabled }}
-        doubleClick={{ disabled: true }}
-      >
-        <Controls isMobileView={isMobileView} />
+      <Controls isMobileView={isMobileView} />
 
-        <TransformComponent
-          wrapperStyle={{
-            width: "100%",
-            height: "100%",
-            cursor: panningEnabled ? "grab" : "default",
-          }}
-        >
-          <div className="relative">
-            {screenConfig.map((screen, index) => (
-              <ScreenFrame
-                key={index}
-                x={PADDING_LEFT + index * (SCREEN_WIDTH + GAP)}
-                y={PADDING_TOP}
-                width={SCREEN_WIDTH}
-                height={SCREEN_HIGHT}
-                setPanningEnabled={setPanningEnabled}
-                htmlCode={screen?.code}
-                projectDetail={projectDetail}
-                panningEnabled={panningEnabled}
-                screen={screen}
-              />
-            ))}
-          </div>
-        </TransformComponent>
-      </TransformWrapper>
-    </div>
-  );
+      {/* 🔥 ONLY CONTENT TRANSFORMS */}
+      <TransformComponent
+        wrapperStyle={{ width: "100%", height: "100%" }}
+      >
+        <div className="relative">
+          {screenConfig.map((screen, index) => (
+            <ScreenFrame
+              key={index}
+              x={PADDING_LEFT + index * (SCREEN_WIDTH + GAP)}
+              y={PADDING_TOP}
+              width={SCREEN_WIDTH}
+              height={SCREEN_HEIGHT}
+              setPanningEnabled={setPanningEnabled}
+              htmlCode={screen.code}
+              projectDetail={projectDetail}
+              panningEnabled={panningEnabled}
+              screen={screen}
+              ref={(el: any) => {
+                iframeRefs.current[index] =
+                  el?.getIframe?.() || null;
+              }}
+            />
+          ))}
+        </div>
+      </TransformComponent>
+    </TransformWrapper>
+  </div>
+);
 }
 
 export default Canvas;
