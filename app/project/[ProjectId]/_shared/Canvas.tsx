@@ -108,66 +108,39 @@ function Canvas({ projectDetail, screenConfig, loading }: Props) {
     }
   };
 
-  /* ================= SCREENSHOT ================= */
   const onTakeScreenshot = async () => {
     if (hasCaptured) return;
-
     try {
       const iframes = iframeRefs.current.filter(Boolean) as HTMLIFrameElement[];
       if (!iframes.length) return;
-
-      const shots: HTMLCanvasElement[] = [];
+      const shotCanvases: HTMLCanvasElement[] = [];
       for (const iframe of iframes) {
         const c = await captureOneIframe(iframe);
-        if (c) shots.push(c);
+        if (c) shotCanvases.push(c);
       }
-      if (!shots.length) return;
-
-      const previewScale = 0.5;
-      const outW = shots.length * (SCREEN_WIDTH * previewScale + 10);
-      const outH = SCREEN_HEIGHT * previewScale;
-
+      if (shotCanvases.length === 0) return;
+      const stitchW = Math.max(shotCanvases.length * (SCREEN_WIDTH * 0.5 + 10), SCREEN_WIDTH * 0.5);
+      const stitchH = SCREEN_HEIGHT * 0.5;
       const out = document.createElement("canvas");
-      out.width = outW;
-      out.height = outH;
-
+      out.width = stitchW; out.height = stitchH;
       const ctx = out.getContext("2d");
       if (!ctx) return;
-
       ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, outW, outH);
-
-      shots.forEach((c, i) => {
-        ctx.drawImage(
-          c,
-          i * (SCREEN_WIDTH * previewScale + 10),
-          0,
-          SCREEN_WIDTH * previewScale,
-          SCREEN_HEIGHT * previewScale
-        );
+      ctx.fillRect(0, 0, stitchW, stitchH);
+      shotCanvases.forEach((canvas, i) => {
+        ctx.drawImage(canvas, i * (SCREEN_WIDTH * 0.5 + 10), 0, SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.5);
       });
-
-      await axios.put("/api/project", {
-        projectId: ProjectId,
-        previewImage: out.toDataURL("image/jpeg", 0.7),
-      });
-
+      await axios.put("/api/project", { projectId: ProjectId, previewImage: out.toDataURL("image/jpeg", 0.7) });
       setHasCaptured(true);
-      console.log("✅ Project preview saved");
-    } catch (e) {
-      console.error("Screenshot failed", e);
-    }
+    } catch (e) { console.error(e); }
   };
 
   /* ================= AUTO TRIGGER ================= */
-  useEffect(() => {
-    if (!loading && !hasCaptured && screenConfig.length > 0) {
-      const ready = screenConfig.every(
-        (s) => s.code && s.code.trim().length > 100
-      );
-      if (ready) {
-        const t = setTimeout(onTakeScreenshot, 5000);
-        return () => clearTimeout(t);
+useEffect(() => {
+    if (screenConfig.length > 0 && !loading && !hasCaptured) {
+      if (screenConfig.every(s => s.code && s.code.trim().length > 100)) {
+        const timer = setTimeout(() => onTakeScreenshot(), 5000);
+        return () => clearTimeout(timer);
       }
     }
   }, [screenConfig, loading, hasCaptured]);

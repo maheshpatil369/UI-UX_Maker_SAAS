@@ -23,6 +23,16 @@ useEffect(() => {
   projectDetail&&setProjetName(projectDetail?.projectName);
 }, [projectDetail])
 
+  const onTakeScreenshot = () => {
+    const canvas = document.querySelector("canvas");
+    if (canvas) {
+      const link = document.createElement("a");
+      link.href = canvas.toDataURL("image/png");
+      link.download = `${projectName || "screenshot"}.png`;
+      link.click();
+    }
+  };
+
   return (
     <div className="w-[300px] h-[90vh] p-5 border-r">
       <h2 className="font-medium text-lg">Settings</h2>
@@ -104,8 +114,8 @@ useEffect(() => {
       <div className="mt-3">
         <h2 className="text-sm mb-1">Extras</h2>
         <div className="flex gap-3">
-          <Button size="sm" variant="outline">
-            <Camera />
+          <Button size="sm" variant="outline" className="flex gap-2" onClick={onTakeScreenshot}>
+            <Camera size={16} />
             Screenshot
           </Button>
           <Button size="sm" variant="outline">
