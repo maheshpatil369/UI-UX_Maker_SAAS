@@ -68,81 +68,62 @@ const [device, setDevice] = useState<string>("mobile");
 };
 
 
-  return (
-    <div className="
-  mx-auto
-  w-full
-  max-w-[360px]
-  sm:max-w-[640px]
-  md:max-w-[768px]
-  lg:max-w-[1024px]
-  xl:max-w-[1280px]
-">
+return (
+  <div className="w-full">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 min-h-[100svh] flex flex-col justify-center py-16">
 
-<div className="
-  h-screen
-  overflow-hidden
-  flex
-  flex-col
-  justify-center
-  px-4
-  sm:px-6
-  md:px-24
-">
+      {/* Badge */}
+      <div className="group relative mx-auto max-w-sm flex items-center justify-center rounded-full px-5 py-2 mb-6
+        bg-white/10 backdrop-blur-md
+        shadow-[0_0_25px_rgba(156,64,255,0.35)] 
+        transition-all duration-500 ease-out 
+        hover:shadow-[0_0_35px_rgba(156,64,255,0.6)]">
 
-   <div className="group relative mx-auto max-w-sm flex items-center justify-center rounded-full px-5 py-2 mb-6
-  bg-white/10 backdrop-blur-md
-  shadow-[0_0_25px_rgba(156,64,255,0.35)] 
-  transition-all duration-500 ease-out 
-  hover:shadow-[0_0_35px_rgba(156,64,255,0.6)]">
+        <span
+          className="absolute inset-0 rounded-full p-[2px] 
+          bg-gradient-to-r from-orange-400 via-violet-500 to-cyan-400 
+          bg-[length:300%_100%] animate-gradient"
+          style={{
+            WebkitMask:
+              "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+            WebkitMaskComposite: "destination-out",
+            mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+            maskComposite: "subtract",
+          }}
+        />
 
-  {/* Strong Animated Border Glow */}
-  <span
-    className="absolute inset-0 rounded-full p-[2px] 
-    bg-gradient-to-r from-orange-400 via-violet-500 to-cyan-400 
-    bg-[length:300%_100%] animate-gradient"
-    style={{
-      WebkitMask:
-        "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-      WebkitMaskComposite: "destination-out",
-      mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-      maskComposite: "subtract",
-    }}
-  />
+        <span className="relative flex items-center text-white font-medium">
+          🎉
+          <hr className="mx-2 h-4 w-px bg-white/40" />
+          <AnimatedGradientText className="text-sm font-semibold">
+            Introducing Magic UI
+          </AnimatedGradientText>
+          <ChevronRight className="ml-1 size-4 text-white/80 transition-transform duration-300 group-hover:translate-x-1" />
+        </span>
+      </div>
 
-  <span className="relative flex items-center text-white font-medium">
-    🎉 
-    <hr className="mx-2 h-4 w-px bg-white/40" />
-    <AnimatedGradientText className="text-sm font-semibold">
-      Introducing Magic UI
-    </AnimatedGradientText>
-    <ChevronRight className="ml-1 size-4 text-white/80 transition-transform duration-300 group-hover:translate-x-1" />
-  </span>
-</div>
+      {/* Heading */}
+      <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center text-violet-600 leading-tight max-w-3xl mx-auto">
+        Design High Quality{" "}
+        <span className="text-teal-500">
+          Website and Mobile App
+        </span>{" "}
+        Designs
+      </h2>
 
- <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center text-violet-600 leading-tight">
+      <p className="text-center text-gray-700 text-base sm:text-lg mt-4 max-w-xl mx-auto">
+        <span className="text-violet-500 font-medium">
+          Imagine your idea
+        </span>{" "}
+        and turn into{" "}
+        <span className="text-teal-500 font-medium">
+          reality
+        </span>
+      </p>
 
-  Design High Quality{" "}
-  <span className="text-teal-500">
-    Website and Mobile App
-  </span>{" "}
-  Designs
-</h2>
-
-<p className="text-center text-gray-700 text-base sm:text-lg mt-3 px-2">
-
-  <span className="text-violet-500 font-medium">
-    Imagine your idea
-  </span>{" "}
-  and turn into{" "}
-  <span className="text-teal-500 font-medium">
-    reality
-  </span>
-</p>
-
-      <div className="flex w-full gap-4 mt-6 items-center justify-center flex-col md:flex-row">
-
-        <InputGroup className="w-full max-w-lg bg-white rounded-2xl">
+      {/* Input Section */}
+      <div className="w-full flex justify-center mt-8">
+        <InputGroup className="w-full max-w-2xl bg-white rounded-2xl shadow-lg">
 
           <InputGroupTextarea
             disabled={!isSignedIn}
@@ -152,47 +133,54 @@ const [device, setDevice] = useState<string>("mobile");
                 : "Please sign-in to start designing"
             }
             className={cn(
-              "flex field-sizing-content min-h-24 w-full resize-none rounded-md bg-transparent px-3 py-2.5 outline-none",
-              !isSignedIn && "opacity-50",
+              "min-h-[100px] w-full resize-none rounded-md bg-transparent px-4 py-3 outline-none text-sm sm:text-base",
+              !isSignedIn && "opacity-50"
             )}
             value={userInput}
             onChange={(event) => setUserInput(event.target?.value)}
-            onKeyDown={handleKeyDown} 
+            onKeyDown={handleKeyDown}
           />
-          <InputGroupAddon align="block-end">
-            <Select value={device} onValueChange={(value) => setDevice(value)}>
-             <SelectTrigger className="text-bold w-[130px] sm:w-[180px]">
-                <SelectValue placeholder="Mobile" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="mobile">Mobile</SelectItem>
-                  <SelectItem value="website">Website</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
 
-            <InputGroupButton 
-              disabled={loading || !userInput} // Input empty ho toh button disable rakhein
-              className="cursor-pointer ml-auto flex items-center justify-center bg-red-400 hover:bg-red-500 min-w-[40px]"
+          <InputGroupAddon align="block-end" className="flex items-center gap-2 p-2">
+
+            <div onMouseDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
+              <Select value={device} onValueChange={(value) => setDevice(value)}>
+                <SelectTrigger className="w-[110px] sm:w-[140px] h-10 text-sm">
+                  <SelectValue placeholder="Device" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="mobile">Mobile</SelectItem>
+                    <SelectItem value="website">Website</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <InputGroupButton
+              disabled={loading || !userInput}
+              className="cursor-pointer flex items-center justify-center bg-red-500 hover:bg-red-600 min-w-[44px] h-10"
               size="sm"
               variant="default"
               onClick={onCreateProject}
             >
               {loading ? (
-                <Loader className="h-4 w-4 animate-spin" /> // animate-spin class check karein
+                <Loader className="h-4 w-4 animate-spin" />
               ) : (
-                <Send className=" h-4 w-4 text-white" /> // Icon ki height/width aur color specify karein
+                <Send className="h-4 w-4 text-white" />
               )}
             </InputGroupButton>
+
           </InputGroupAddon>
         </InputGroup>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:flex gap-3 mt-6 justify-center">
+
+      {/* Suggestions */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mt-10 max-w-3xl mx-auto w-full">
         {suggestions.map((suggestion, index) => (
           <div
             key={index}
-           className="p-3 border rounded-2xl flex flex-col items-center cursor-pointer bg-white z-20 w-full sm:w-auto"
+            className="p-4 border rounded-2xl flex flex-col items-center cursor-pointer bg-white hover:shadow-md transition"
             onClick={() => setUserInput(suggestion?.description)}
           >
             <h2 className="text-lg">{suggestion?.icon}</h2>
@@ -202,9 +190,10 @@ const [device, setDevice] = useState<string>("mobile");
           </div>
         ))}
       </div>
+
     </div>
-    </div>
-  );
+  </div>
+);
 }
 
 export default Hero;

@@ -24,24 +24,46 @@ type Props = {
 /* ================= CONTROLS ================= */
 const Controls = ({ isMobileView }: { isMobileView: boolean }) => {
   const { zoomIn, zoomOut, resetTransform } = useControls();
-  if (isMobileView) return null;
 
   return (
-    <div className="absolute bottom-6 right-6 z-50 flex flex-col gap-2 bg-white/80 backdrop-blur-md p-1.5 rounded-xl shadow-2xl border border-gray-200">
-      <button onClick={() => zoomIn()} className="p-2.5 rounded-lg text-gray-500 hover:bg-white">
-        <ZoomIn size={20} />
+    <div
+      className={`
+        absolute z-50 flex gap-2 bg-white/90 backdrop-blur-md p-1.5 rounded-2xl shadow-2xl border border-gray-200
+        ${isMobileView ? "bottom-28 right-4 flex-row" : "bottom-6 right-6 flex-col"}
+      `}
+    >
+      <button
+        onClick={() => zoomIn()}
+        className="p-3 hover:bg-gray-100 active:bg-gray-200 rounded-xl text-gray-700 transition-all"
+        title="Zoom In"
+      >
+        <ZoomIn size={isMobileView ? 24 : 20} />
       </button>
-      <button onClick={() => zoomOut()} className="p-2.5 rounded-lg text-gray-500 hover:bg-white">
-        <ZoomOut size={20} />
+
+      <button
+        onClick={() => zoomOut()}
+        className="p-3 hover:bg-gray-100 active:bg-gray-200 rounded-xl text-gray-700 transition-all"
+        title="Zoom Out"
+      >
+        <ZoomOut size={isMobileView ? 24 : 20} />
       </button>
-      <div className="h-px bg-gray-200 mx-2" />
-      <button onClick={() => resetTransform()} className="p-2.5 rounded-lg text-gray-500 hover:bg-white">
-        <Maximize size={20} />
+
+      <div
+        className={`${
+          isMobileView ? "w-px h-8" : "h-px w-8"
+        } bg-gray-200 self-center`}
+      />
+
+      <button
+        onClick={() => resetTransform()}
+        className="p-3 hover:bg-gray-100 active:bg-gray-200 rounded-xl text-gray-700 transition-all font-bold"
+        title="Reset View"
+      >
+        <Maximize size={isMobileView ? 24 : 20} />
       </button>
     </div>
   );
 };
-
 /* ================= CANVAS ================= */
 function Canvas({ projectDetail, screenConfig, loading }: Props) {
   const { ProjectId } = useParams();

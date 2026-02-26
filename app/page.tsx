@@ -27,9 +27,9 @@ export default function Home() {
     <div>
       <Header />
 
-      <div className="min-h-screen overflow-hidden flex items-center justify-center">
-        <Hero />
-      </div>
+ <div className="min-h-[100svh] flex items-center justify-center px-4 sm:px-6">
+  <Hero />
+</div>
 
       {/* RECENT PROJECTS */}
        {projects.length > 0 && (
