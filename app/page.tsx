@@ -65,6 +65,28 @@ export default function Home() {
         </div>
       )}
 
+      {/* FOOTER */}
+      <div className="max-w-6xl mx-auto px-6 p-4 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="text-sm text-gray-500">
+          Built with ❤️ by <span className="font-semibold text-gray-800">@Mahesh Patil</span>
+        </div>
+        
+        <div className="flex items-center gap-6">
+          <a 
+            href="https://maheshpatil.tech"
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-sm text-red-600 hover:text-red-400 transition-colors font-bold  border-b border-transparent hover:border-red-600"
+          >
+            Contact Developer
+          </a>
+          <span className="text-gray-300 hidden md:block">|</span>
+          <p className="text-xs text-gray-600">
+            © {new Date().getFullYear()} UIForage. All rights reserved.
+          </p>
+        </div>
+      </div>
+
       {/* Background blobs */}
       <div className="absolute -top-40 -left-40 h-[500px] w-[500px] bg-purple-400/20 blur-[120px] rounded-full"></div>
       <div className="absolute -top-40 -left-40 h-[500px] w-[500px] bg-pink-400/20 blur-[120px] rounded-full"></div>
