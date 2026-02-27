@@ -10,7 +10,7 @@ import { ProjectType } from '@/type/types'
 
 interface Props {
   projectDetail: ProjectType | undefined;
-  onIframeRef: (iframe: HTMLIFrameElement | null) => void;
+  onIframeRef?: (iframe: HTMLIFrameElement | null) => void;
 }
 
 export const SettingSection: React.FC<Props> = ({ projectDetail }) => {
