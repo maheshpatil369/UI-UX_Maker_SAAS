@@ -176,9 +176,12 @@ return (
             onKeyDown={handleKeyDown}
           />
 
-          <InputGroupAddon align="block-end" className="flex items-center gap-2 p-2">
+ <InputGroupAddon
+  align="block-end"
+  className="flex items-center justify-between w-full p-2"
+>
 
-            <div onMouseDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
+            <div className="flex items-center" onMouseDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
               <Select value={device} onValueChange={(value) => setDevice(value)}>
                 <SelectTrigger className="w-[110px] sm:w-[140px] h-10 text-sm">
                   <SelectValue placeholder="Device" />
@@ -192,19 +195,21 @@ return (
               </Select>
             </div>
 
-            <InputGroupButton
-              disabled={loading || !userInput}
-              className="cursor-pointer flex items-center justify-center bg-red-500 hover:bg-red-600 min-w-[44px] h-10"
-              size="sm"
-              variant="default"
-              onClick={onCreateProject}
-            >
-              {loading ? (
-                <Loader className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4 text-white" />
-              )}
-            </InputGroupButton>
+    <InputGroupButton
+  disabled={loading || !userInput}
+  className="cursor-pointer flex items-center justify-center 
+  bg-red-500 hover:bg-red-600 
+  w-10 h-10 shrink-0 p-0"
+  size="sm"
+  variant="default"
+  onClick={onCreateProject}
+>
+  {loading ? (
+    <Loader className="h-4 w-4 animate-spin text-white" />
+  ) : (
+    <Send className="h-4 w-4 text-white" />
+  )}
+</InputGroupButton>
 
           </InputGroupAddon>
         </InputGroup>

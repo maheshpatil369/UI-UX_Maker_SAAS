@@ -3,36 +3,64 @@ import React from 'react'
 import Image from 'next/image'
 import { SignInButton, UserButton, SignedOut, SignedIn } from '@clerk/nextjs';
 import { useUser } from '@clerk/nextjs';
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export const Header = () => {
-  const{user}=useUser();   
+  const router = useRouter();
+  const { user } = useUser();
+
   return (
-    <div>
-      <div className='flex items-center justify-between p-3'>
-        <div className='flex gap-2 items-center'>
-        <Image src="/UIForage.png" alt="Logo" width={170} height={90} />
-        </div>
-<ul className='flex gap-5 items-center text-lg'>
-    <li className='hover:text-primary cursor-pointer'>Home</li>
-    <li className='hover:text-primary cursor-pointer'>Pricing</li>
-</ul>
-<>
-  <SignedOut>
-    <SignInButton mode='modal'> 
-<button className="bg-red-600 hover:bg-red-500 text-white 
-px-4 py-2 text-sm
-sm:px-5 sm:py-2.5 sm:text-base
-w-full sm:w-auto
-rounded-full transition-all font-medium cursor-pointer">
-  Get Started
-</button>
-    </SignInButton>
-  </SignedOut>
-  <SignedIn>
-    <UserButton />
-  </SignedIn>
-</>
-      </div>
-    </div>
-  )
-}
+  <div className="w-full flex items-center justify-between px-8 py-3 relative z-50 backdrop-blur-md bg-white/20">
+
+  {/* Logo Left */}
+  <div className="flex items-center">
+    <Link href="/">
+      <Image
+        src="/UIForage.png"
+        alt="Logo"
+        width={150}
+        height={70}
+        className="cursor-pointer"
+      />
+    </Link>
+  </div>
+
+
+  {/* Center Navigation */}
+  <div className="absolute left-1/2 -translate-x-1/2">
+    <ul className="flex gap-8 items-center text-lg font-medium">
+      <Link href="/">
+        <li className="hover:text-red-500 cursor-pointer transition-colors">
+          Home
+        </li>
+      </Link>
+
+      <Link href="/pricing">
+        <li className="hover:text-red-500 cursor-pointer transition-colors">
+          Pricing
+        </li>
+      </Link>
+    </ul>
+  </div>
+
+
+  {/* Right Auth */}
+  <div className="flex items-center gap-4">
+    <SignedOut>
+      <SignInButton mode="modal">
+        <button className="bg-red-600 hover:bg-red-500 text-white 
+        px-5 py-2.5 rounded-full font-medium transition cursor-pointer">
+          Get Started
+        </button>
+      </SignInButton>
+    </SignedOut>
+
+    <SignedIn>
+      <UserButton />
+    </SignedIn>
+  </div>
+
+</div>
+
+  )}
