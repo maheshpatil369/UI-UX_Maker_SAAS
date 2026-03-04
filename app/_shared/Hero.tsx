@@ -30,6 +30,9 @@ const [device, setDevice] = useState<string>("mobile");
   const { user, isSignedIn } = useUser();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [showApiModal, setShowApiModal] = useState(false);
+const [apiKey, setApiKey] = useState("");
+const [savingKey, setSavingKey] = useState(false);
 
   const onCreateProject = async () => {
     if (!user) {
@@ -51,12 +54,44 @@ const [device, setDevice] = useState<string>("mobile");
       }),
     });
 
-    const data = await result.json();
-    console.log(data);
-    setLoading(false);
+const data = await result.json();
 
-    router.push(`/project/` + projectId);
+if (result.status === 403) {
+  setLoading(false);
+  setShowApiModal(true);
+  return;
+}
+
+console.log(data);
+
+setLoading(false);
+
+router.push(`/project/` + projectId);
   };
+
+  const saveApiKey = async () => {
+
+  setSavingKey(true);
+
+  const res = await fetch("/api/user/api-key", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ apiKey }),
+  });
+
+  const data = await res.json();
+
+  setSavingKey(false);
+
+  if (res.ok) {
+    alert("API key saved successfully!");
+    setShowApiModal(false);
+  } else {
+    alert(data.error);
+  }
+};
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
   if (e.key === "Enter" && !e.shiftKey) {
@@ -190,6 +225,54 @@ return (
           </div>
         ))}
       </div>
+      {showApiModal && (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+
+    <div className="bg-white rounded-xl p-6 w-[420px]">
+
+      <h2 className="text-lg font-semibold mb-2">
+        Project Limit Reached
+      </h2>
+
+      <p className="text-sm text-gray-600 mb-4">
+        Free mode allows only <b>2 projects</b>.
+        Add your OpenRouter API key to create unlimited projects.
+      </p>
+
+      <input
+        className="border w-full p-2 rounded mb-3"
+        placeholder="sk-or-xxxx"
+        value={apiKey}
+        onChange={(e)=>setApiKey(e.target.value)}
+      />
+
+      <button
+        onClick={saveApiKey}
+        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded w-full"
+      >
+        {savingKey ? "Validating..." : "Save API Key"}
+      </button>
+
+      <div className="text-xs text-gray-500 mt-4 space-y-1">
+        <p>How to get OpenRouter API key:</p>
+        <p>1. Go to https://openrouter.ai</p>
+        <p>2. Login to your account</p>
+        <p>3. Open "Keys" section</p>
+        <p>4. Generate new key</p>
+        <p>5. Paste it here</p>
+      </div>
+
+      <button
+        onClick={()=>setShowApiModal(false)}
+        className="text-sm text-gray-500 mt-4 underline"
+      >
+        Cancel
+      </button>
+
+    </div>
+
+  </div>
+)}
 
     </div>
   </div>

@@ -4,9 +4,27 @@ export const usersTable = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: varchar({ length: 255 }).notNull(),
   email: varchar({ length: 255 }).notNull().unique(),
+
   credits: integer().default(5),
+
+  openrouterApiKey: text(), 
+  apiKeySource: varchar({ length: 20 }).default("admin"), 
 });
 
+
+import { boolean } from "drizzle-orm/pg-core";
+
+export const apiKeysTable = pgTable("apikeys", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+
+  userEmail: varchar().notNull(),
+
+  apiKey: text().notNull(),
+
+  isActive: boolean().default(false),
+
+  createdAt: timestamp().defaultNow(),
+});
 
 export const projectsTable = pgTable("project",  {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),

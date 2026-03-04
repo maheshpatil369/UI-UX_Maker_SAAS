@@ -1,10 +1,12 @@
+"use client";
 import React from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ui/ThemeToogle'
 import { SignedIn, UserButton } from '@clerk/nextjs'
-import { Pause, Play, XCircle } from 'lucide-react'
-
+import { Pause, Play, XCircle, Key } from 'lucide-react'
+import ApiKeyModal from '@/components/ApiKeyModal'
+import { useState } from 'react'
 // Extended Props (non-breaking)
 type Props = {
   progress?: number
@@ -24,15 +26,23 @@ const ProjectHeader = ({
   onPause,
   onResume,
   onCancel,
-}: Props) => {
+  
+}:
+
+Props) => {
+  const [showApiModal, setShowApiModal] = useState(false);
   return (
     <div>
       <div className='flex items-center justify-between p-1.5 shadow-sm'>
 
         {/* Left */}
-        <div className='flex gap-2 items-center'>
-        <Image className='mt-1' src="/UIForage.png" alt="UIForage" width={140} height={90} />
-        </div>
+    <div className='flex gap-3 items-center'>
+
+
+
+<Image className='mt-1' src="/UIForage.png" alt="UIForage" width={140} height={90} />
+
+</div>
 
         {/* Right */}
         <div className="flex items-center gap-4">
@@ -99,11 +109,23 @@ const ProjectHeader = ({
           )}
 
           {/* Save */}
-          <Button className='bg-red-600 hover:bg-red-500'>
-            Save {progress === 100 && (
-              <span className="text-[10px] text-green-600 ml-1"> ●</span>
-            )}
-          </Button>
+   {/* API KEY BUTTON */}
+<Button
+variant="outline"
+size="sm"
+className="flex items-center gap-1"
+onClick={()=>setShowApiModal(true)}
+>
+<Key size={14}/>
+API Key
+</Button>
+
+{/* Save */}
+<Button className='bg-red-600 hover:bg-red-500'>
+  Save {progress === 100 && (
+    <span className="text-[10px] text-green-600 ml-1"> ●</span>
+  )}
+</Button>
 
           {/* User */}
           <SignedIn>
@@ -115,6 +137,9 @@ const ProjectHeader = ({
         </div>
 
       </div>
+      {showApiModal && (
+  <ApiKeyModal close={()=>setShowApiModal(false)} />
+)}
     </div>
   )
 }

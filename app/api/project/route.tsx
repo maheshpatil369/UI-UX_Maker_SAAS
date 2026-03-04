@@ -4,6 +4,7 @@ import { projectsTable, ScreenConfigTable } from "@/config/schema";
 import { NextResponse, NextRequest } from "next/server";
 import { db } from "@/config/db";
 import { and, eq, desc } from "drizzle-orm";
+import { usersTable } from "@/config/schema";
 
 export async function POST(request: Request) {
   try {
@@ -14,14 +15,51 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const email = user.primaryEmailAddress.emailAddress;
+    console.log("USER EMAIL:", email);
+
+const dbUser = await db
+  .select()
+  .from(usersTable)
+  .where(eq(usersTable.email, email));
+  
+
+const userData = dbUser[0];
+
     const existing = await db
       .select()
       .from(projectsTable)
       .where(eq(projectsTable.projectId, projectId));
+      console.log("DB USER DATA:", userData);
+console.log("USER API KEY:", userData?.openrouterApiKey ? "HAS KEY" : "NO KEY");
 
     if (existing.length > 0) {
       return NextResponse.json(existing[0]);
     }
+
+if (!userData?.openrouterApiKey) {
+
+  console.log("Using ADMIN fallback API key");
+
+  const projectCount = await db
+    .select()
+    .from(projectsTable)
+    .where(eq(projectsTable.userId, email));
+
+  console.log("Current Project Count:", projectCount.length);
+
+  if (projectCount.length >= 2) {
+
+    console.log("Project limit reached for free user");
+
+    return NextResponse.json(
+      { error: "Free limit reached. Add your OpenRouter API key." },
+      { status: 403 }
+    );
+  }
+
+  console.log("Project allowed for free user");
+}
 
     const result = await db
       .insert(projectsTable)
