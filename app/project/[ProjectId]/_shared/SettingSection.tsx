@@ -87,35 +87,39 @@ export const SettingSection: React.FC<Props> = ({ projectDetail }) => {
           <h2 className="text-sm mb-1">Themes</h2>
           <div className="h-50 overflow-auto">
             {THEME_NAME_LIST.map((theme: ThemeKey, index: number) => (
-              <div
-                key={index}
-                className={`p-3 border rounded-2xl mb-3 cursor-pointer transition-all ${
-                  theme === selectedTheme ? "border-primary bg-primary/20" : ""
-                }`}
-                onClick={() => setSelectedTheme(theme)}
-              >
-                <h2 className="text-sm font-semibold tracking-wide uppercase">
-                  {theme.replaceAll("_", " ")}
-                </h2>
+           <div
+  key={index}
+  className={`group relative p-3 border rounded-2xl mb-3 cursor-pointer transition-all ${
+    theme === selectedTheme ? "border-primary bg-primary/20" : ""
+  }`}
+  onClick={() => setSelectedTheme(theme)}
+>
+  <h2 className="text-sm font-semibold tracking-wide uppercase">
+    {theme.replaceAll("_", " ")}
+  </h2>
 
-                <div className="flex gap-2 p-2">
-                  <div className="h-4 w-4 rounded-full" style={{ background: THEMES[theme].primary }} />
-                  <div className="h-4 w-4 rounded-full" style={{ background: THEMES[theme].secondary }} />
-                  <div className="h-4 w-4 rounded-full" style={{ background: THEMES[theme].accent }} />
-                  <div className="h-4 w-4 rounded-full" style={{ background: THEMES[theme].background }} />
-                  <div
-                    className="h-4 w-4 rounded-full"
-                    style={{
-                      background: `linear-gradient(
-                        135deg,
-                        ${THEMES[theme].background},
-                        ${THEMES[theme].primary},
-                        ${THEMES[theme].accent}
-                      )`,
-                    }}
-                  />
-                </div>
-              </div>
+  <div className="flex gap-2 p-2">
+    <div className="h-4 w-4 rounded-full" style={{ background: THEMES[theme].primary }} />
+    <div className="h-4 w-4 rounded-full" style={{ background: THEMES[theme].secondary }} />
+    <div className="h-4 w-4 rounded-full" style={{ background: THEMES[theme].accent }} />
+    <div className="h-4 w-4 rounded-full" style={{ background: THEMES[theme].background }} />
+    <div
+      className="h-4 w-4 rounded-full"
+      style={{
+        background: `linear-gradient(
+          135deg,
+          ${THEMES[theme].background},
+          ${THEMES[theme].primary},
+          ${THEMES[theme].accent}
+        )`,
+      }}
+    />
+  </div>
+
+<span className="absolute bottom-[-22px] left-2 text-[11px] px-2 py-[2px] rounded-md border bg-muted text-muted-foreground shadow-sm opacity-0 group-hover:opacity-100 transition">
+  Coming Soon...
+</span>
+</div>
             ))}
           </div>
         </div>

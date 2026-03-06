@@ -7,6 +7,7 @@ import { SignedIn, UserButton } from '@clerk/nextjs'
 import { Pause, Play, XCircle, Key } from 'lucide-react'
 import ApiKeyModal from '@/components/ApiKeyModal'
 import { useState } from 'react'
+import { useToast } from "@/hooks/use-toast"
 // Extended Props (non-breaking)
 type Props = {
   progress?: number
@@ -30,6 +31,13 @@ const ProjectHeader = ({
 }:
 
 Props) => {
+  const { toast } = useToast()
+  const handleSave = () => {
+  toast({
+    title: "Saved Successfully",
+    description: "Your project has been saved successfully.",
+  })
+}
   const [showApiModal, setShowApiModal] = useState(false);
   return (
     <div>
@@ -71,7 +79,11 @@ Props) => {
       {/* <div className="h-full bg-green-500 w-full" /> */}
     </div>
   // </div>
-) : null}
+) :  (
+  <div className="text-xs font-medium text-black-600 flex items-center gap-1">
+    ⚠️Generation Failed
+  </div>
+)}
 
 
           {/* 🆕 Pause / Resume / Cancel */}
@@ -120,8 +132,10 @@ onClick={()=>setShowApiModal(true)}
 API Key
 </Button>
 
-{/* Save */}
-<Button className='bg-red-600 hover:bg-red-500'>
+<Button
+  className="bg-red-600 hover:bg-red-500"
+  onClick={handleSave}
+>
   Save {progress === 100 && (
     <span className="text-[10px] text-green-600 ml-1"> ●</span>
   )}
