@@ -9,26 +9,13 @@ import Link from "next/link";
 export const Header = () => {
   const router = useRouter();
   const { user } = useUser();
-  const handleNavigation = (path: string) => {
-
-  const isGenerating = (window as any).__uiGenerating;
-
-  if (isGenerating) {
-    const confirmLeave = window.confirm(
-      "UI generation is in progress. Leaving will cancel generation. Continue?"
-    );
-
-    if (!confirmLeave) return;
-  }
-
-  router.push(path);
-};
 
   return (
   <div className="w-full flex items-center justify-between px-8 py-3 relative z-50 backdrop-blur-md bg-white/20">
 
   {/* Logo Left */}
-  <div onClick={() => handleNavigation("/")} className="cursor-pointer">
+  <div className="flex items-center">
+    <Link href="/">
       <Image
         src="/logowithname.png"
         alt="Logo"
@@ -36,25 +23,24 @@ export const Header = () => {
         height={60}
         className="cursor-pointer transition-all duration-300 hover:scale-105 hover:drop-shadow-[0_0_10px_rgba(239,68,68,0.6)]"
       />
+    </Link>
   </div>
 
 
   {/* Center Navigation */}
   <div className="absolute left-1/2 -translate-x-1/2">
     <ul className="flex gap-8 items-center text-lg font-medium">
-      <li
-  onClick={() => handleNavigation("/")}
-  className="hover:text-red-500 cursor-pointer transition-colors"
->
-  Home
-</li>
+      <Link href="/">
+        <li className="hover:text-red-500 cursor-pointer transition-colors">
+          Home
+        </li>
+      </Link>
 
-   <li
-  onClick={() => handleNavigation("/pricing")}
-  className="hover:text-red-500 cursor-pointer transition-colors"
->
-  Pricing
-</li>
+      <Link href="/pricing">
+        <li className="hover:text-red-500 cursor-pointer transition-colors">
+          Pricing
+        </li>
+      </Link>
     </ul>
   </div>
 

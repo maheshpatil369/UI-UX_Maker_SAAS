@@ -33,9 +33,8 @@ const ProjectCanvasPlayground = ({ params }: PageProps) => {
     console.log("🚀 Starting screen generation flow");
 
     try {
-   setLoading(true);
-(window as any).__uiGenerating = true;
-setProgress(0);
+      setLoading(true);
+      setProgress(0);
 
       console.log("📡 Calling /api/generate-config");
 
@@ -99,11 +98,9 @@ setProgress(0);
       console.log("✅ All screens generated");
     } catch (e) {
       console.error("❌ Generation Error:", e);
-    }finally {
-  setLoading(false);
-  setIsCancelled(false);
-  (window as any).__uiGenerating = false;
-}
+    } finally {
+      setLoading(false);
+    }
   };
 
   /* ================= SAFE AUTO TRIGGER ================= */
@@ -154,32 +151,13 @@ setProgress(0);
     abortControllerRef.current?.abort();
   };
 
-const waitWhilePaused = async () => {
-  while (isPaused) {
-    await new Promise(res => setTimeout(res, 300));
-  }
-};
-
-/* ================= NAVIGATION GUARD ================= */
-useEffect(() => {
-  const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-    if (loading) {
-      const message =
-        "UI generation is in progress. Are you sure you want to leave?";
-      e.preventDefault();
-      e.returnValue = message;
-      return message;
+  const waitWhilePaused = async () => {
+    while (isPaused) {
+      await new Promise(res => setTimeout(res, 300));
     }
   };
 
-  window.addEventListener("beforeunload", handleBeforeUnload);
-
-  return () => {
-    window.removeEventListener("beforeunload", handleBeforeUnload);
-  };
-}, [loading]);
-
-return (
+  return (
     <div className="h-screen flex flex-col">
       <ProjectHeader
         progress={progress}
