@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
           "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
           "HTTP-Referer": "https://uixmaker.in",
-          "X-Title": "UIForge",
+          "X-Title": "UIStudio",
         },
         body: JSON.stringify({
           model: "openai/gpt-4o-mini",

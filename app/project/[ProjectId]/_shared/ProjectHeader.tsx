@@ -40,7 +40,7 @@ Props) => {
 
 
 
-<Image className='mt-1' src="/UIForage.png" alt="UIForage" width={140} height={90} />
+<Image className='mt-1' src="/logowithname.png" alt="UIStudio" width={140} height={90} />
 
 </div>
 
@@ -51,7 +51,7 @@ Props) => {
 {loading ? (
   <div className="flex items-center gap-2">
     <div className="text-xs font-medium text-blue-600 animate-pulse">
-      AI Forge: {progress}%
+      AI Studio: {progress}%
     </div>
 
     <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden border">

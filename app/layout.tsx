@@ -13,12 +13,12 @@ const appFont = DM_Sans({
 /* ================= SEO METADATA ================= */
 export const metadata: Metadata = {
   title: {
-    default: "UI Forge – AI UI/UX Creator & Website Builder",
-    template: "%s | UI Forge",
+    default: "UI Studio – AI UI/UX Creator & Website Builder",
+    template: "%s | UI Studio",
   },
 
   description:
-    "UI Forge is an AI-powered UI/UX creator that generates modern website and mobile app designs instantly. Build UI mockups, dashboards, and interfaces faster.",
+    "UI Studio is an AI-powered UI/UX creator that generates modern website and mobile app designs instantly. Build UI mockups, dashboards, and interfaces faster.",
 
   keywords: [
     "UI UX creator",
@@ -33,28 +33,28 @@ export const metadata: Metadata = {
     "design to code",
   ],
 
-  authors: [{ name: "UI Forge Team" }],
-  creator: "UI Forge",
+  authors: [{ name: "UI Studio Team" }],
+  creator: "UI Studio",
 
   metadataBase: new URL("https://uixmaker.in"),
 
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+    icon: "/loogo.png",
+    apple: "/loogo.png",
   },
 
   openGraph: {
-    title: "UI Forge – AI UI/UX Creator",
+    title: "UI Studio – AI UI/UX Creator",
     description:
       "Generate professional UI/UX designs for websites and mobile apps using AI. Fast, modern, and developer-friendly.",
     url: "https://uixmaker.in",
-    siteName: "UI Forge",
+    siteName: "UI Studio",
     images: [
       {
-        url: "/UIForage.png", // optional (recommended)
+        url: "/logowithname.png", 
         width: 1200,
         height: 630,
-        alt: "UI Forge – AI UI UX Creator",
+        alt: "UI Studio – AI UI UX Creator",
       },
     ],
     type: "website",
@@ -62,10 +62,10 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "UI Forge – AI UI/UX Creator",
+    title: "UI Studio – AI UI/UX Creator",
     description:
       "Create modern UI/UX designs instantly using AI. Websites, dashboards, and mobile apps.",
-    images: ["/logo.png"],
+    images: ["/loogo.png"],
   },
 
   robots: {

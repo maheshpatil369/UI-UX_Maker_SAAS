@@ -17,11 +17,11 @@ export const Header = () => {
   <div className="flex items-center">
     <Link href="/">
       <Image
-        src="/UIForage.png"
+        src="/logowithname.png"
         alt="Logo"
-        width={150}
-        height={70}
-        className="cursor-pointer"
+        width={130}
+        height={60}
+        className="cursor-pointer transition-all duration-300 hover:scale-105 hover:drop-shadow-[0_0_10px_rgba(239,68,68,0.6)]"
       />
     </Link>
   </div>
