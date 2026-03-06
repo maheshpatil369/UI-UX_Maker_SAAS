@@ -4,12 +4,17 @@ import ProjectHeader from "./_shared/ProjectHeader";
 import { SettingSection } from "./_shared/SettingSection";
 import axios from "axios";
 import Canvas from "./_shared/Canvas";
+import { useSearchParams } from "next/navigation";
+
+
 
 interface PageProps {
   params: Promise<{ ProjectId: string }>;
 }
 
 const ProjectCanvasPlayground = ({ params }: PageProps) => {
+    const searchParams = useSearchParams();
+  const isViewOnly = searchParams.get("view") === "true";
   const resolvedParams = use(params);
   const ProjectId = resolvedParams.ProjectId;
 
@@ -18,6 +23,7 @@ const ProjectCanvasPlayground = ({ params }: PageProps) => {
   const [loading, setLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState("Loading...");
   const [progress, setProgress] = useState(0);
+
 
   const PAUSE_PROJECT_FLOW = false;
 
@@ -179,7 +185,9 @@ const ProjectCanvasPlayground = ({ params }: PageProps) => {
           border-b lg:border-b-0 lg:border-r
           overflow-y-auto
         ">
-          <SettingSection projectDetail={projectDetail} />
+         {!isViewOnly && (
+  <SettingSection projectDetail={projectDetail} />
+)}
         </div>
 
         {/* CANVAS */}
