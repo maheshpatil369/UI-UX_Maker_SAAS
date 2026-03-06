@@ -2,7 +2,7 @@
 import React from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { ThemeToggle } from '@/components/ui/ThemeToogle'
+// import { ThemeToggle } from '@/components/ui/ThemeToogle'
 import { SignedIn, UserButton } from '@clerk/nextjs'
 import { Pause, Play, XCircle, Key } from 'lucide-react'
 import ApiKeyModal from '@/components/ApiKeyModal'
@@ -144,7 +144,7 @@ API Key
           {/* User */}
           <SignedIn>
             <div className="flex items-center gap-4">
-              <ThemeToggle />
+              {/* <ThemeToggle /> */}
               <UserButton />
             </div>
           </SignedIn>
