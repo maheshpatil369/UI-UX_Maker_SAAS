@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { THEME_NAME_LIST, THEMES, ThemeKey } from "@/data/Themes";
 import { Camera, Share, Sparkle, Menu, X } from "lucide-react";
 import { ProjectType } from '@/type/types'
+import { useToast } from "@/hooks/use-toast"
 
 interface Props {
   projectDetail: ProjectType | undefined;
@@ -18,7 +19,7 @@ export const SettingSection: React.FC<Props> = ({ projectDetail }) => {
   const [selectedTheme, setSelectedTheme] = useState<ThemeKey | null>(null);
   const [projectName, setProjetName] = useState(projectDetail?.projectName);
   const [userNewScreenInput, setUserNewScreenInput] = useState<string>("");
-
+const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -37,19 +38,23 @@ export const SettingSection: React.FC<Props> = ({ projectDetail }) => {
     }
   };
 
-  /* Share Project */
-  const onShareProject = async () => {
-    if (!projectDetail?.projectId) return;
+const onShareProject = async () => {
+  if (!projectDetail?.projectId) return;
 
-    const shareUrl = `${window.location.origin}/project/${projectDetail.projectId}?view=true`;
+  const shareUrl = `${window.location.origin}/project/${projectDetail.projectId}?view=true`;
 
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      alert("Share link copied to clipboard!");
-    } catch {
-      prompt("Copy this link:", shareUrl);
-    }
-  };
+  try {
+    await navigator.clipboard.writeText(shareUrl);
+
+    toast({
+      title: "Share link copied!",
+      description: "Project link copied to clipboard.",
+    });
+
+  } catch {
+    prompt("Copy this link:", shareUrl);
+  }
+};
 
   return (
     <>
