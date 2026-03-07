@@ -6,13 +6,13 @@ import { Button } from '@/components/ui/button'
 import { SignedIn, UserButton } from '@clerk/nextjs'
 import { Pause, Play, XCircle, Key } from 'lucide-react'
 import ApiKeyModal from '@/components/ApiKeyModal'
-import { useState } from 'react'
+import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 // Extended Props (non-breaking)
 type Props = {
   progress?: number
   loading?: boolean
-
+  
   // NEW (optional)
   isPaused?: boolean
   onPause?: () => void
@@ -31,6 +31,33 @@ const ProjectHeader = ({
 }:
 
 Props) => {
+  useEffect(() => {
+    let interval: NodeJS.Timeout
+    
+    if (loading) {
+      interval = setInterval(() => {
+        setSeconds((prev) => prev + 1)
+      }, 1000)
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval)
+      }
+  }, [loading])
+  
+  useEffect(() => {
+    if (loading) {
+      setSeconds(0)
+    }
+  }, [loading])
+  
+  const [seconds, setSeconds] = useState(0)
+const formatTime = (sec: number) => {
+  const minutes = Math.floor(sec / 60)
+  const seconds = sec % 60
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`
+}
+
   const { toast } = useToast()
   const handleSave = () => {
   toast({
@@ -52,14 +79,20 @@ Props) => {
 
 </div>
 
+
         {/* Right */}
         <div className="flex items-center gap-4">
 
  {/* Progress / Completed Status */}
 {loading ? (
-  <div className="flex items-center gap-2">
+  <div className="flex items-center gap-3">
+
     <div className="text-xs font-medium text-blue-600 animate-pulse">
       AI Studio: {progress}%
+    </div>
+
+    <div className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">
+      ⏱ {formatTime(seconds)}
     </div>
 
     <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden border">
@@ -68,6 +101,7 @@ Props) => {
         style={{ width: `${progress}%` }}
       />
     </div>
+
   </div>
 ) : progress === 100 ? (
   <div className="flex items-center gap-2">
