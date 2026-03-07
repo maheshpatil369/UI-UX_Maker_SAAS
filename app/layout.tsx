@@ -92,12 +92,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={appFont.className}>
-             <Analytics/>
         <ClerkProvider>
-          <Provider>{children}
-             <Toaster />
-             </Provider>
+          <Provider>
+            {children}
+            <Toaster />
+          </Provider>
         </ClerkProvider>
+        <Analytics />
       </body>
     </html>
   );
