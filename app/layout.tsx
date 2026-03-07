@@ -5,6 +5,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Provider from "./provider";
 import { Toaster } from "@/components/ui/toaster"
+import { Analytics } from "@vercel/analytics/next"
 
 const appFont = DM_Sans({
   subsets: ["latin"],
@@ -91,6 +92,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={appFont.className}>
+             <Analytics/>
         <ClerkProvider>
           <Provider>{children}
              <Toaster />
