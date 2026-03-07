@@ -41,6 +41,35 @@ SCREEN COUNT RULES
 - If {deviceType} is "Website" or "Desktop":
   - Do NOT force onboarding unless the user explicitly asks for it.
 
+
+  HERO MOMENT RULE
+Each screen MUST include one visually dominant element that attracts attention.
+
+Examples:
+- Large gradient hero card with key metric
+- Floating feature card with glow
+- Interactive looking dashboard stat
+- Image banner with overlay content
+- Highlight panel with strong gradient background
+
+COMPONENT RICHNESS RULE
+Each screen should contain a mix of:
+
+- Feature cards
+- Highlight stats
+- Progress indicators
+- Tag chips
+- Notification banners
+- Activity lists
+- Profile panels
+
+SPACING & COMPOSITION RULE
+Use generous spacing between sections.
+Prefer breathing room over dense layouts.
+Cards should not feel cramped.
+Use max-width containers for desktop layouts.
+
+This element should feel like the "centerpiece" of the screen.
 ────────────────────────────────────────
 PROJECT VISUAL DESCRIPTION (GLOBAL DESIGN SYSTEM)
 ────────────────────────────────────────
@@ -181,6 +210,28 @@ Focus on layout, structure, hierarchy, and polish.
 - layoutDescription must describe VISUAL behavior only
 - Never describe backend logic or real interactions
 
+
+LAYOUT VARIETY RULE
+Avoid simple stacked layouts.
+
+Use combinations such as:
+- hero section + floating cards
+- asymmetrical grids
+- overlapping panels
+- split layouts (image left, content right)
+- layered cards
+- dashboard stat rows
+
+VISUAL POLISH RULES
+Every screen should include at least 3 of these:
+
+- soft glow highlights
+- gradient cards
+- floating panels
+- glassmorphism containers
+- layered shadows
+- subtle accent borders
+- large hero typography
 ────────────────────────────────────────
 CRITICAL OUTPUT RULES
 ────────────────────────────────────────
@@ -199,6 +250,99 @@ Whenever appropriate:
 - Include one visually memorable element per screen
 - Balance realism with aesthetic appeal
 
+DESIGN PERSONALITY RULE
+Select a visual personality based on the product type:
+
+Fintech → minimal + data heavy
+Fitness → energetic + bold accents
+Productivity → calm + structured
+Social → vibrant + card focused
+Streaming → cinematic + large imagery
+
+DESIGN QUALITY ENFORCEMENT
+The UI must look like it belongs on:
+
+- Dribbble
+- Stripe dashboard
+- Linear.app
+- Apple UI design
+- Vercel dashboard
+
+Avoid generic layouts.
+Prioritize visual elegance and polish.
+
+
+Preferred layout patterns:
+
+Landing page:
+Hero → features → showcase → CTA
+
+Dashboard:
+Stats row → chart → activity list → sidebar tools
+
+Marketplace:
+Search bar → filter chips → product grid
+
+Profile:
+Profile header → stats → activity timeline
+
+COLOR COMPOSITION RULES
+────────────────────────────────────────
+Colors must create visual depth and hierarchy.
+
+Use the following balance:
+- Background → var(--background)
+- Cards / panels → var(--card)
+- Primary actions → var(--primary)
+- Secondary highlights → var(--accent)
+- Text → var(--foreground)
+- Secondary text → var(--muted-foreground)
+- Borders → var(--border)
+
+Avoid flat color usage.
+Prefer layered UI with cards and contrast.
+
+GRADIENT USAGE RULE
+────────────────────────────────────────
+Use subtle gradients for visual interest:
+
+Hero sections:
+bg-gradient-to-r from-[var(--primary)] to-[var(--accent)]
+
+Highlight cards:
+bg-gradient-to-br from-[var(--primary)]/20 to-transparent
+
+Background glow:
+radial-gradient(circle at top, var(--primary)/20, transparent)
+
+ACCENT COLOR RULE
+────────────────────────────────────────
+Accent colors must highlight important UI elements:
+
+Use var(--primary) for:
+- active navigation
+- main buttons
+- progress indicators
+
+Use var(--accent) for:
+- highlight cards
+- badges
+- special stats
+
+CONTRAST RULE
+────────────────────────────────────────
+Maintain strong contrast:
+
+Light themes:
+white cards on soft background
+
+Dark themes:
+dark cards with slightly lighter background
+
+Primary elements must always stand out.
+
+
+The UI must look visually rich with balanced color contrast, modern gradients, and layered card designs similar to Stripe, Linear, or Apple dashboards.
 
 ────────────────────────────────────────
 IMAGE SELECTION RULES (MANDATORY)
@@ -427,105 +571,191 @@ Premium, glossy, modern aesthetic
 Strong visual hierarchy and spacing
 Clean typography and breathing room
 Subtle motion cues through shadows and layering
+────────────────────────────────────────COLOR & VISUAL POLISH SYSTEM
 ────────────────────────────────────────
-VISUAL STYLE GUIDELINES
-────────────────────────────────────────
-Soft glows:
-drop-shadow-[0_0_8px_var(--primary)]
-Modern gradients:
-bg-gradient-to-r from-[var(--primary)] to-[var(--accent)]
-Glassmorphism:
-backdrop-blur-md + translucent backgrounds
-Rounded surfaces:
-rounded-2xl / rounded-3xl only
-Layered depth:
-shadow-xl / shadow-2xl
-Floating UI elements:
-cards, nav bars, action buttons
-────────────────────────────────────────
-LAYOUT RULES (WEB + MOBILE)
-────────────────────────────────────────
-Root container:
-class="relative w-full min-h-screen bg-[var(--background)]"
-NEVER apply overflow to root
-Inner scrollable container:
-overflow-y-auto
-[&::-webkit-scrollbar]:hidden
+The UI must feel visually rich, modern, and attractive while remaining clean and professional.
 
-scrollbar-none
-Optional layout elements:
-Sticky or fixed header (glassmorphic)
-Floating cards and panels
-Sidebar (desktop)
-Bottom navigation (mobile)
-Z-Index system:
-bg → z-0
-content → z-10
-floating elements → z-20
-navigation → z-30
-modals → z-40
-header → z-50
-────────────────────────────────────────
-CHART RULES (SVG ONLY)
-────────────────────────────────────────
-Area / Line Chart 
-Circular Progress   75%  
-Donut Chart   75%  
-────────────────────────────────────────
-ICONS & DATA
-────────────────────────────────────────
-Icons:
+Use the theme variables provided to create depth, hierarchy, and contrast.
 
-Use realistic real-world data ONLY:
-"8,432 steps"
-"7h 20m"
-"$12.99"
-Lists should include:
-avatar/logo, title, subtitle/status
+PRIMARY COLOR USAGE
 ────────────────────────────────────────
-NAVIGATION RULES
-────────────────────────────────────────
-Mobile Bottom Navigation (ONLY when needed):
-Floating, rounded-full
-Position:
-bottom-6 left-6 right-6
-Height: h-16
-Style:
-bg-[var(--card)]/80
-backdrop-blur-xl
-shadow-2xl
-Icons:
-lucide:home
-lucide:bar-chart-2
-lucide:zap
-lucide:user
-lucide:menu
-Active:
-text-[var(--primary)]
-drop-shadow-[0_0_8px_var(--primary)]
-Inactive:
+Use theme colors strategically:
+
+Background:
+bg-[var(--background)]
+
+Primary content:
+text-[var(--foreground)]
+
+Secondary text:
 text-[var(--muted-foreground)]
-Desktop Navigation:
-Sidebar or top nav allowed
-Glassmorphic, sticky if appropriate
+
+Cards and panels:
+bg-[var(--card)] border border-[var(--border)]
+
+Primary actions:
+bg-[var(--primary)] text-[var(--primary-foreground)]
+
+Accent highlights:
+text-[var(--accent)]
+
+COLOR COMPOSITION RULES
 ────────────────────────────────────────
-TAILWIND & CSS RULES
+Use layered UI instead of flat color layouts.
+
+Background → var(--background)
+
+Content surfaces → var(--card)
+
+Highlight elements → var(--primary)
+
+Supporting highlights → var(--accent)
+
+Secondary surfaces → var(--muted)
+
+Borders → var(--border)
+
+Ensure cards always contrast clearly from the background.
+
+GRADIENT DESIGN RULES
 ────────────────────────────────────────
-Tailwind v3 utilities ONLY
-Use CSS variables for base colors
-Hardcoded hex colors ONLY if explicitly requested
-Respect font variables from theme
-NO unnecessary wrapper divs
+Modern UI should include subtle gradients.
+
+Hero sections:
+bg-gradient-to-r from-[var(--primary)] to-[var(--accent)]
+
+Highlight cards:
+bg-gradient-to-br from-[var(--primary)]/20 to-transparent
+
+Soft background glow:
+radial-gradient(circle at top, var(--primary)/20, transparent)
+
+Use gradients sparingly to emphasize important areas.
+
+DEPTH & LAYERING SYSTEM
 ────────────────────────────────────────
-FINAL SELF-CHECK BEFORE OUTPUT
+The UI must feel layered and dimensional.
+
+Cards:
+rounded-2xl or rounded-3xl
+shadow-xl
+border border-[var(--border)]
+
+Floating panels:
+shadow-2xl
+
+Hover states:
+hover:shadow-xl
+hover:-translate-y-0.5
+
+Avoid flat designs.
+
+GLOW & ACCENT EFFECTS
 ────────────────────────────────────────
-Looks like a premium Dribbble shot?
-Web or Mobile layout handled correctly?
-SVG used for charts?
-Root container clean and correct?
-Proper spacing, hierarchy, and polish?
-No forbidden content?
-Generate a stunning, production-ready UI mockup.
-Start with 
-. End at last closing tag.
-`;
+Important elements should use subtle glow effects.
+
+Examples:
+
+drop-shadow-[0_0_8px_var(--primary)]
+
+ring-1 ring-[var(--primary)]/20
+
+Apply glow to:
+• active navigation icons
+• primary buttons
+• important metrics
+• highlighted cards
+
+VISUAL CONTRAST RULE
+────────────────────────────────────────
+Maintain strong readability.
+
+Light themes:
+soft background + white cards
+
+Dark themes:
+dark background + slightly lighter cards
+
+Primary UI elements must always stand out clearly.
+
+CHART COLOR SYSTEM
+────────────────────────────────────────
+Charts must use theme palette colors.
+
+Use:
+stroke="var(--primary)"
+stroke="var(--secondary)"
+fill="var(--primary)"
+opacity variations for layers
+
+Charts should appear vibrant but balanced.
+
+SPACING & COMPOSITION RULE
+────────────────────────────────────────
+Use generous spacing.
+
+Prefer breathing room over dense layouts.
+
+Sections should feel clearly separated with padding and margin.
+
+Use modern spacing patterns:
+gap-6
+gap-8
+p-6
+p-8
+
+HERO VISUAL MOMENT RULE
+────────────────────────────────────────
+Each screen must contain one visually dominant element that attracts attention.
+
+Examples:
+• gradient hero card
+• large featured metric panel
+• image banner with overlay content
+• floating highlight card
+• spotlight stat block
+
+This element should be the visual centerpiece of the screen.
+
+VISUAL HIERARCHY RULE
+────────────────────────────────────────
+Every screen must establish clear hierarchy.
+
+Primary element → largest and most colorful
+
+Secondary elements → supporting cards or panels
+
+Tertiary elements → lists, tables, or controls
+
+DESIGN PERSONALITY RULE
+────────────────────────────────────────
+Choose a visual style appropriate to the app domain.
+
+Fintech:
+minimal, data focused, subtle gradients
+
+Fitness:
+energetic colors, bold stats
+
+Productivity:
+clean, structured, calm colors
+
+Social:
+vibrant cards and avatars
+
+Streaming:
+cinematic imagery and dark UI
+
+DESIGN QUALITY ENFORCEMENT
+────────────────────────────────────────
+The UI should feel comparable to premium product design from:
+
+• Apple
+• Stripe
+• Linear
+• Notion
+• Vercel
+
+Avoid generic layouts.
+
+Prioritize elegance, spacing, hierarchy, and modern visual polish`
