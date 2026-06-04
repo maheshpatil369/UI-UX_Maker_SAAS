@@ -5,7 +5,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Provider from "./provider";
 import { Toaster } from "@/components/ui/toaster"
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/next" 
 
 const appFont = DM_Sans({
   subsets: ["latin"],
